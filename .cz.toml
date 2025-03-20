@@ -1,0 +1,52 @@
+[tool.commitizen]
+name = "cz_customize"
+version = "0.1.0"
+tag_format = "v$version"
+
+[tool.commitizen.customize]
+message_template = "#{{issue}} {{change_type}}({{scope}}): {{title}}\n\n{{message}}\n\nResolves: #{{issue}}\nSee also: {{see_also}}"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "issue"
+message = "Issue 번호를 입력하세요 (#제외):"
+
+[[tool.commitizen.customize.questions]]
+type = "select"
+name = "change_type"
+message = "변경 유형을 선택하세요:"
+choices = [
+    { value = "feat", name = "feat: 새로운 기능 추가" },
+    { value = "fix", name = "fix: 버그 수정" },
+    { value = "docs", name = "docs: 문서" },
+    { value = "style", name = "style: 코드 스타일 변경" },
+    { value = "refactor", name = "refactor: 코드 리팩토링" },
+    { value = "test", name = "test: 테스트 코드" },
+    { value = "chore", name = "chore: 기타 변경사항" }
+]
+
+[[tool.commitizen.customize.questions]]
+type = "select"
+name = "scope"
+message = "변경사항의 범위를 입력하세요 (예: auth, user):"
+choices = [
+    { value = "config", name = "config: 환경 구성" },
+    { value = "api", name = "api: api 문서" },
+    { value = "wiki", name = "wiki: wiki 문서" }
+]
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "title"
+message = "제목을 입력하세요 (40자 이내): "
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "message"
+message = "상세 내용을 입력하세요: "
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "see_also"
+message = "관련된 다른 이슈 번호를 입력하세요 (선택사항, 기본값: None):"
+default = "None"
