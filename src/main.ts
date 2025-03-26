@@ -7,7 +7,7 @@ import { EnvironmentVariables } from '@common/env';
 import { swaggerConfig } from '@common/swagger';
 
 import { AppModule } from './app.module';
-import { API_DOC_SLUG } from 'src/constants';
+import { API_DOC_SLUG } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
