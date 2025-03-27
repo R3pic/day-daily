@@ -5,13 +5,15 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@common/*": ["./src/common/*"]
+      "@common/*": ["./src/common/*"],
+      "@theme/*": ["./src/modules/theme/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -20,5 +22,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true
   }
 }
