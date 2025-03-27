@@ -7,4 +7,5 @@ export const swaggerConfig = new DocumentBuilder()
   .addTag('User')
   .addTag('Diary')
   .addTag('Theme')
+  .addTag('Me')
   .build();

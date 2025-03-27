@@ -12,5 +12,6 @@ import { ThemeRepository } from '@theme/theme.repository';
     ThemeRepository,
     ThemeScheduler,
   ],
+  exports: [ThemeService],
 })
 export class ThemeModule {}

@@ -37,16 +37,19 @@ describe('ThemeService', () => {
   });
 
   describe('getTodayTheme', () => {
-    const theme = '오늘의 주제';
+    const theme: ThemeEntity = {
+      id: '1',
+      text: '오늘의 주제',
+    };
     it('오늘의 주제를 정상적으로 반환한다.', async () => {
-      const expected = theme;
-      mockRepository.getRandomTheme.mockResolvedValue({ id: '1', text: theme });
+      const expected = '오늘의 주제';
+      mockRepository.getRandomTheme.mockResolvedValue(theme);
       mockConfigService.get.mockReturnValue(Environment.Test);
       await service.onModuleInit();
 
       const actual = service.getTodayTheme();
 
-      expect(actual).toEqual(expected);
+      expect(actual.text).toEqual(expected);
     });
   });
 
@@ -85,7 +88,7 @@ describe('ThemeService', () => {
       expect(mockGetLastLog).toHaveBeenCalled();
       expect(mockConfigGet).not.toHaveBeenCalled();
       expect(mockGetRandomTheme).toHaveBeenCalled();
-      expect(result).toEqual(themeEntity.text);
+      expect(result.text).toEqual(themeEntity.text);
     });
 
     it('로그가 존재하며, 오늘이 지났을 경우 오늘의 주제를 새롭게 설정한다.', async () => {
@@ -105,7 +108,7 @@ describe('ThemeService', () => {
 
       expect(mockGetRandomTheme).toHaveBeenCalled();
       expect(mockSaveLog).toHaveBeenCalledWith(themeEntity);
-      expect(result).toEqual(themeEntity.text);
+      expect(result.text).toEqual(themeEntity.text);
       expect(mockFindById).not.toHaveBeenCalled();
     });
 
@@ -126,7 +129,7 @@ describe('ThemeService', () => {
 
       expect(mockGetRandomTheme).not.toHaveBeenCalled();
       expect(mockSaveLog).not.toHaveBeenCalled();
-      expect(result).toEqual(themeEntity.text);
+      expect(result.text).toEqual(themeEntity.text);
       expect(mockFindById).toHaveBeenCalled();
     });
   });

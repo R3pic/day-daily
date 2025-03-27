@@ -13,7 +13,9 @@
     "baseUrl": "./",
     "paths": {
       "@common/*": ["./src/common/*"],
-      "@theme/*": ["./src/modules/theme/*"]
+      "@theme/*": ["./src/modules/theme/*"],
+      "@diary/*": ["./src/modules/diary/*"],
+      "@me/*": ["./src/modules/me/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

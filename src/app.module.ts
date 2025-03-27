@@ -7,6 +7,8 @@ import { ThemeModule } from '@theme/theme.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MeModule } from './modules/me/me.module';
+import { DiaryModule } from './modules/diary/diary.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AppService } from './app.service';
     }),
     ScheduleModule.forRoot(),
     ThemeModule,
+    MeModule,
+    DiaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
