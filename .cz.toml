@@ -32,6 +32,8 @@ message = "변경사항의 범위를 입력하세요 (예: auth, user):"
 choices = [
     { value = "config", name = "config: 환경 구성" },
     { value = "api", name = "api: api 문서" },
+    { value = "theme", name = "theme: Theme(주제) API" },
+    { value = "diary", name = "diary: Diary(일기) API" },
     { value = "wiki", name = "wiki: wiki 문서" }
 ]
 

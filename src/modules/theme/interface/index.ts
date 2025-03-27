@@ -1,0 +1,1 @@
+export { ThemeRepositoryBase } from './theme.repository.interface';
