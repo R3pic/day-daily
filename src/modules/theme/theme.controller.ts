@@ -21,10 +21,10 @@ export class ThemeController {
   @HttpCode(HttpStatus.OK)
   @ApiTodayResponses()
   today(): TodayThemeResponse {
-    const theme = this.themeService.getTodayTheme();
+    const { text } = this.themeService.getTodayTheme();
 
     return {
-      theme,
+      theme: text,
     };
   }
 }

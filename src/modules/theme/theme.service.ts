@@ -21,8 +21,8 @@ export class ThemeService implements OnModuleInit {
     await this.triggerUpdateTodayTheme();
   }
 
-  getTodayTheme(): string {
-    return this.todayTheme.text;
+  getTodayTheme(): ThemeEntity {
+    return this.todayTheme;
   }
 
   async updateTodayTheme(): Promise<void> {

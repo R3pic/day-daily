@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 
 import { EnvironmentVariables } from '@common/env';
@@ -22,6 +22,13 @@ async function bootstrap() {
   const port = configService.get<number>('PORT');
 
   app.setGlobalPrefix('api/v1');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    })
+  );
   await app.listen(port, () => {
     logger.log(`server running on : ${host}:${port}`);
     logger.log(`api documentation : ${host}:${port}/${API_DOC_SLUG}`);

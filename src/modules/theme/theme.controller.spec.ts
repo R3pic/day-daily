@@ -27,11 +27,14 @@ describe('ThemeController', () => {
   });
 
   describe('today', () => {
-    const theme = '오늘의 주제';
+    const theme = {
+      id: '1',
+      text: '오늘의 주제',
+    };
 
     it('서비스에서 받은 오늘의 주제를 응답의 형식에 맞게 반환한다.', () => {
       const expected: TodayThemeResponse = {
-        theme,
+        theme: theme.text,
       };
       const getTodayThemeMock = service.getTodayTheme.mockReturnValue(theme);
 
