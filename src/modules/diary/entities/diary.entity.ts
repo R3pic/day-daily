@@ -5,7 +5,7 @@ export class DiaryEntity {
   id: string;
 
   @Exclude()
-  theme_id: string;
+  theme_id: string | null;
 
   @Expose()
   title: string;

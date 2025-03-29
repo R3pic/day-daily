@@ -24,4 +24,12 @@ export class DiaryService {
     const createdEntity = await this.diaryRepository.save(entity);
     return DiaryMapper.toDto(createdEntity);
   }
+
+  async findByRecent(): Promise<DiaryDto[]> {
+    this.logger.log('findByRecent');
+
+    const recentDiaries = await this.diaryRepository.findByRecent();
+
+    return recentDiaries.map((diary) => DiaryMapper.toDto(diary));
+  }
 }

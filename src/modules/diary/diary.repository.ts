@@ -5,8 +5,23 @@ import { DiaryEntity } from '@diary/entities';
 
 @Injectable()
 export class DiaryRepository implements DiaryRepositoryBase {
-  private diaries: DiaryEntity[] = [];
-  private diaryId = 0;
+  private diaries: DiaryEntity[] = [
+    {
+      id: '1',
+      theme_id: '1',
+      title: '일기 제목 샘플',
+      content: '일기 내용 샘플입니다.',
+      created_at: new Date(),
+    },
+    {
+      id: '2',
+      theme_id: null,
+      title: '일기 제목 샘플',
+      content: '일기 내용 샘플입니다.',
+      created_at: new Date(),
+    },
+  ];
+  private diaryId = 2;
   constructor() {}
 
   async save(diaryEntity: DiaryEntity): Promise<DiaryEntity> {
@@ -25,5 +40,9 @@ export class DiaryRepository implements DiaryRepositoryBase {
       return Promise.reject(new Error('Database Error'));
     else
       return Promise.resolve(createdEntity);
+  }
+
+  async findByRecent(): Promise<DiaryEntity[]> {
+    return Promise.resolve(this.diaries.slice(-5));
   }
 }
