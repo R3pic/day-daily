@@ -19,7 +19,7 @@ export class DiaryEntity {
   @Exclude()
   @ManyToOne(() => ThemeEntity, { nullable: true })
   @JoinColumn({ name: 'theme' })
-  theme_id: string | null;
+  theme: ThemeEntity | null;
 
   @Expose()
   @Column({ type: 'varchar', length: 100, name: 'title', nullable: false })
