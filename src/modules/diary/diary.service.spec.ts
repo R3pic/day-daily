@@ -119,4 +119,85 @@ describe('DiaryService', () => {
       expect(saveMock).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('findByRecent', () => {
+    const diaryEntities: DiaryEntity[] = [
+      {
+        id: '1',
+        theme_id: null,
+        title: '일기 제목 샘플',
+        content: '일기 내용 샘플입니다.',
+        created_at: new Date(),
+      },
+      {
+        id: '2',
+        theme_id: null,
+        title: '일기 제목 샘플',
+        content: '일기 내용 샘플입니다.',
+        created_at: new Date(),
+      },
+      {
+        id: '3',
+        theme_id: null,
+        title: '일기 제목 샘플',
+        content: '일기 내용 샘플입니다.',
+        created_at: new Date(),
+      },
+      {
+        id: '4',
+        theme_id: null,
+        title: '일기 제목 샘플',
+        content: '일기 내용 샘플입니다.',
+        created_at: new Date(),
+      },
+      {
+        id: '5',
+        theme_id: null,
+        title: '일기 제목 샘플',
+        content: '일기 내용 샘플입니다.',
+        created_at: new Date(),
+      },
+    ];
+
+    it('가장 최근 일기 5개를 반환합니다.', async () => {
+      const expected: DiaryDto[] = [
+        {
+          id: '1',
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '2',
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '3',
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '4',
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '5',
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+      ];
+      mockRepository.findByRecent.mockResolvedValue(diaryEntities);
+
+      const actual = await service.findByRecent();
+
+      expect(actual).toHaveLength(5);
+      expect(actual).toEqual(expected);
+    });
+  });
 });
