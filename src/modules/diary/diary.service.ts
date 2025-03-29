@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { DiaryRepository } from '@diary/diary.repository';
 import { ThemeService } from '@theme/theme.service';
+import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { DiaryMapper } from '@diary/diary.mapper';
 import { CreateDiaryDto } from '@diary/dto/create-diary.dto';
 import { DiaryDto } from '@diary/dto/diary.dto';
-import { QueryRunnerFactory } from '@database/query-runner.factory';
 
 @Injectable()
 export class DiaryService {
@@ -26,7 +27,7 @@ export class DiaryService {
       const entity = DiaryMapper.createDtoToEntity(createDiaryDto);
 
       if (createDiaryDto.use_theme)
-        entity.theme_id = this.themeService.getTodayTheme().id;
+        entity.theme = this.themeService.getTodayTheme();
 
       const createdEntity = await this.diaryRepository.save(entity);
       return DiaryMapper.toDto(createdEntity);

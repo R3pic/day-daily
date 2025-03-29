@@ -1,3 +1,4 @@
+import { QueryRunner } from 'typeorm';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -8,7 +9,6 @@ import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryEntity } from '@diary/entities';
 import { CreateDiaryDto, DiaryDto } from '@diary/dto';
 import { QueryRunnerFactory } from '@database/query-runner.factory';
-import { QueryRunner } from 'typeorm';
 
 describe('DiaryService', () => {
   let service: DiaryService;

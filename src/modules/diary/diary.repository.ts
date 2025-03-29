@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-
-import { DiaryRepositoryBase } from '@diary/interfaces/diary.repository.interface';
-import { DiaryEntity } from '@diary/entities';
 import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
+import { DiaryRepositoryBase } from '@diary/interfaces';
+import { DiaryEntity } from '@diary/entities';
 
 @Injectable()
 export class DiaryRepository implements DiaryRepositoryBase {

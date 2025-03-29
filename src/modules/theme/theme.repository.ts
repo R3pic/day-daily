@@ -1,9 +1,9 @@
 import { Repository } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { ThemeRepositoryBase } from '@theme/interface';
 import { ThemeEntity } from '@theme/entities';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ThemeRepository implements ThemeRepositoryBase {

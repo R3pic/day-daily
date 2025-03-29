@@ -1,0 +1,1 @@
+export { DiaryRepositoryBase } from './diary.repository.interface';
