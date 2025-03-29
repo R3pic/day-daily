@@ -1,7 +1,7 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { DiaryController } from '@diary//diary.controller';
+import { DiaryController } from '@diary/diary.controller';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryDto } from '@diary/dto';
 import { GetRecentDiaryResponse } from '@diary/responses';
