@@ -4,9 +4,14 @@ import { ThemeModule } from '@theme/theme.module';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryController } from './diary.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DiaryEntity } from '@diary/entities';
 
 @Module({
-  imports: [ThemeModule],
+  imports: [
+    TypeOrmModule.forFeature([DiaryEntity]),
+    ThemeModule,
+  ],
   providers: [
     DiaryService,
     DiaryRepository,
