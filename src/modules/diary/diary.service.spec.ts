@@ -69,13 +69,13 @@ describe('DiaryService', () => {
         content: '테스트 내용',
       };
       const toSaveEntity: DiaryEntity = DiaryEntity.of({
-        theme_id: themeEntity.id,
+        theme: themeEntity,
         title: dto.title,
         content: dto.content,
       });
       const saveReturnEntity: DiaryEntity = {
         id: '1',
-        theme_id: '4',
+        theme: themeEntity,
         title: '테스트 제목',
         content: '테스트 내용',
         createdAt: new Date(),
@@ -104,13 +104,13 @@ describe('DiaryService', () => {
         content: '테스트 내용',
       };
       const toSaveEntity: DiaryEntity = DiaryEntity.of({
-        theme_id: undefined,
+        theme: undefined,
         title: dto.title,
         content: dto.content,
       });
       const saveReturnEntity: DiaryEntity = DiaryEntity.of({
         id: '1',
-        theme_id: undefined,
+        theme: undefined,
         title: '테스트 제목',
         content: '테스트 내용',
         createdAt: new Date(),
@@ -140,35 +140,35 @@ describe('DiaryService', () => {
       diaryEntities = [
         {
           id: '1',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
           createdAt: new Date(),
         },
         {
           id: '2',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
           createdAt: new Date(),
         },
         {
           id: '3',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
           createdAt: new Date(),
         },
         {
           id: '4',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
           createdAt: new Date(),
         },
         {
           id: '5',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
           createdAt: new Date(),
