@@ -1,17 +1,21 @@
+import { QueryRunner } from 'typeorm';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { ThemeService } from '@theme/theme.service';
-import { ThemeEntity } from '@theme/entities/theme.entity';
+import { ThemeEntity } from '@theme/entities';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryEntity } from '@diary/entities';
 import { CreateDiaryDto, DiaryDto } from '@diary/dto';
+import { QueryRunnerFactory } from '@database/query-runner.factory';
 
 describe('DiaryService', () => {
   let service: DiaryService;
   let mockRepository: MockProxy<DiaryRepository>;
   let mockThemeService: MockProxy<ThemeService>;
+  let mockQueryRunnerFactory: MockProxy<QueryRunnerFactory>;
+  let mockQueryRunner: MockProxy<QueryRunner>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,17 +23,24 @@ describe('DiaryService', () => {
         DiaryService,
         DiaryRepository,
         ThemeService,
+        QueryRunnerFactory,
       ],
     })
       .overrideProvider(DiaryRepository)
       .useValue(mock<DiaryRepository>())
       .overrideProvider(ThemeService)
       .useValue(mock<ThemeService>())
+      .overrideProvider(QueryRunnerFactory)
+      .useValue(mock<QueryRunnerFactory>())
       .compile();
 
     service = module.get<DiaryService>(DiaryService);
     mockRepository = module.get(DiaryRepository);
     mockThemeService = module.get(ThemeService);
+    mockQueryRunnerFactory = module.get(QueryRunnerFactory);
+    mockQueryRunner = mock<QueryRunner>();
+
+    mockQueryRunnerFactory.create.mockReturnValue(mockQueryRunner);
 
     jest.useFakeTimers().setSystemTime();
   });
@@ -57,24 +68,24 @@ describe('DiaryService', () => {
         title: '테스트 제목',
         content: '테스트 내용',
       };
-      const toSaveEntity: DiaryEntity = new DiaryEntity({
-        theme_id: themeEntity.id,
+      const toSaveEntity: DiaryEntity = DiaryEntity.of({
+        theme: themeEntity,
         title: dto.title,
         content: dto.content,
       });
       const saveReturnEntity: DiaryEntity = {
         id: '1',
-        theme_id: '4',
+        theme: themeEntity,
         title: '테스트 제목',
         content: '테스트 내용',
-        created_at: new Date(),
+        createdAt: new Date(),
       };
 
       const expected: DiaryDto = {
         id: saveReturnEntity.id,
         title: saveReturnEntity.title,
         content: saveReturnEntity.content,
-        created_at: saveReturnEntity.created_at,
+        created_at: saveReturnEntity.createdAt,
       };
       const saveMock = mockRepository.save.mockResolvedValue(saveReturnEntity);
 
@@ -92,24 +103,24 @@ describe('DiaryService', () => {
         title: '테스트 제목',
         content: '테스트 내용',
       };
-      const toSaveEntity: DiaryEntity = new DiaryEntity({
-        theme_id: undefined,
+      const toSaveEntity: DiaryEntity = DiaryEntity.of({
+        theme: undefined,
         title: dto.title,
         content: dto.content,
       });
-      const saveReturnEntity: DiaryEntity = new DiaryEntity({
+      const saveReturnEntity: DiaryEntity = DiaryEntity.of({
         id: '1',
-        theme_id: undefined,
+        theme: undefined,
         title: '테스트 제목',
         content: '테스트 내용',
-        created_at: new Date(),
+        createdAt: new Date(),
       });
 
       const expected: DiaryDto = {
         id: saveReturnEntity.id,
         title: saveReturnEntity.title,
         content: saveReturnEntity.content,
-        created_at: saveReturnEntity.created_at,
+        created_at: saveReturnEntity.createdAt,
       };
       const saveMock = mockRepository.save.mockResolvedValue(saveReturnEntity);
 
@@ -129,38 +140,38 @@ describe('DiaryService', () => {
       diaryEntities = [
         {
           id: '1',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
-          created_at: new Date(),
+          createdAt: new Date(),
         },
         {
           id: '2',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
-          created_at: new Date(),
+          createdAt: new Date(),
         },
         {
           id: '3',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
-          created_at: new Date(),
+          createdAt: new Date(),
         },
         {
           id: '4',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
-          created_at: new Date(),
+          createdAt: new Date(),
         },
         {
           id: '5',
-          theme_id: null,
+          theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
-          created_at: new Date(),
+          createdAt: new Date(),
         },
       ];
     });

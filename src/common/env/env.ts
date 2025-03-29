@@ -22,4 +22,25 @@ export class EnvironmentVariables {
   @Min(0)
   @Max(65535)
   PORT: number;
+
+  // DATABASE
+  @IsString()
+  DATABASE_HOST: string;
+
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  DATABASE_PORT: number;
+
+  @IsString()
+  DATABASE_ROOT_PASSWORD: string;
+
+  @IsString()
+  DATABASE_NAME: string;
+
+  @IsString()
+  DATABASE_USER: string;
+
+  @IsString()
+  DATABASE_PASSWORD: string;
 }

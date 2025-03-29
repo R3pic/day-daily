@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ThemeModule } from '@theme/theme.module';
+import { DiaryController } from '@diary/diary.controller';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
-import { DiaryController } from './diary.controller';
+import { DiaryEntity } from '@diary/entities';
 
 @Module({
-  imports: [ThemeModule],
+  imports: [
+    TypeOrmModule.forFeature([DiaryEntity]),
+    ThemeModule,
+  ],
   providers: [
     DiaryService,
     DiaryRepository,

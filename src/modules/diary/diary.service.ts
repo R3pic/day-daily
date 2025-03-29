@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { DiaryRepository } from '@diary/diary.repository';
 import { ThemeService } from '@theme/theme.service';
+import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { DiaryMapper } from '@diary/diary.mapper';
 import { CreateDiaryDto } from '@diary/dto/create-diary.dto';
 import { DiaryDto } from '@diary/dto/diary.dto';
@@ -12,17 +14,31 @@ export class DiaryService {
   constructor(
     private readonly themeService: ThemeService,
     private readonly diaryRepository: DiaryRepository,
+    private readonly queryRunnerFactory: QueryRunnerFactory,
   ) {}
 
   async create(createDiaryDto: CreateDiaryDto): Promise<DiaryDto> {
-    this.logger.log(`create : ${createDiaryDto.title}`);
-    const entity = DiaryMapper.createDtoToEntity(createDiaryDto);
+    const queryRunner = this.queryRunnerFactory.create();
+    await queryRunner.connect();
 
-    if (createDiaryDto.use_theme)
-      entity.theme_id = this.themeService.getTodayTheme().id;
+    await queryRunner.startTransaction();
+    try {
+      this.logger.log(`create : ${createDiaryDto.title}`);
+      const entity = DiaryMapper.createDtoToEntity(createDiaryDto);
 
-    const createdEntity = await this.diaryRepository.save(entity);
-    return DiaryMapper.toDto(createdEntity);
+      if (createDiaryDto.use_theme)
+        entity.theme = this.themeService.getTodayTheme();
+
+      const createdEntity = await this.diaryRepository.save(entity);
+      return DiaryMapper.toDto(createdEntity);
+    } catch (e) {
+      if(e instanceof Error) this.logger.error(e.message);
+      await queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await queryRunner.release();
+    }
+
   }
 
   async findByRecent(): Promise<DiaryDto[]> {

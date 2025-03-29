@@ -15,6 +15,6 @@ export class DiaryDto {
   readonly content: string;
 
   @ApiProperty({ description: '일기 작성 일자' })
-  @Expose()
+  @Expose({ name: 'createdAt' })
   readonly created_at: Date;
 }
