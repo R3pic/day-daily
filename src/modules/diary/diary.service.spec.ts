@@ -13,10 +13,6 @@ describe('DiaryService', () => {
   let mockRepository: MockProxy<DiaryRepository>;
   let mockThemeService: MockProxy<ThemeService>;
 
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -34,6 +30,12 @@ describe('DiaryService', () => {
     service = module.get<DiaryService>(DiaryService);
     mockRepository = module.get(DiaryRepository);
     mockThemeService = module.get(ThemeService);
+
+    jest.useFakeTimers().setSystemTime();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('should be defined', () => {
@@ -121,43 +123,47 @@ describe('DiaryService', () => {
   });
 
   describe('findByRecent', () => {
-    const diaryEntities: DiaryEntity[] = [
-      {
-        id: '1',
-        theme_id: null,
-        title: '일기 제목 샘플',
-        content: '일기 내용 샘플입니다.',
-        created_at: new Date(),
-      },
-      {
-        id: '2',
-        theme_id: null,
-        title: '일기 제목 샘플',
-        content: '일기 내용 샘플입니다.',
-        created_at: new Date(),
-      },
-      {
-        id: '3',
-        theme_id: null,
-        title: '일기 제목 샘플',
-        content: '일기 내용 샘플입니다.',
-        created_at: new Date(),
-      },
-      {
-        id: '4',
-        theme_id: null,
-        title: '일기 제목 샘플',
-        content: '일기 내용 샘플입니다.',
-        created_at: new Date(),
-      },
-      {
-        id: '5',
-        theme_id: null,
-        title: '일기 제목 샘플',
-        content: '일기 내용 샘플입니다.',
-        created_at: new Date(),
-      },
-    ];
+    let diaryEntities: DiaryEntity[];
+
+    beforeEach(() => {
+      diaryEntities = [
+        {
+          id: '1',
+          theme_id: null,
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '2',
+          theme_id: null,
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '3',
+          theme_id: null,
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '4',
+          theme_id: null,
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+        {
+          id: '5',
+          theme_id: null,
+          title: '일기 제목 샘플',
+          content: '일기 내용 샘플입니다.',
+          created_at: new Date(),
+        },
+      ];
+    });
 
     it('가장 최근 일기 5개를 반환합니다.', async () => {
       const expected: DiaryDto[] = [

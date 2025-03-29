@@ -11,7 +11,11 @@ describe('MeController', () => {
   let mockDiaryService: MockProxy<DiaryService>;
 
   beforeAll(() => {
-    jest.useFakeTimers();
+    jest.useFakeTimers().setSystemTime();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
   });
 
   beforeEach(async () => {

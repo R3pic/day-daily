@@ -10,6 +10,14 @@ describe('DiaryController', () => {
   let controller: DiaryController;
   let mockService: MockProxy<DiaryService>;
 
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DiaryController],
