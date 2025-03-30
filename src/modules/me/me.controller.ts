@@ -4,7 +4,7 @@ import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse } from '@diary/responses';
 import { CreateDiaryDto } from '@diary/dto';
-import { ApiCreateDiaryResponses } from '@diary/swagger';
+import { ApiCreateDiaryResponses } from '@diary/decorator';
 
 @ApiTags('Me')
 @ApiExtraModels(CreateDiaryResponse)

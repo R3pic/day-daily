@@ -7,7 +7,7 @@ import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { ThemeService } from '@theme/theme.service';
 import { TodayThemeResponse } from '@theme/responses';
-import { ApiTodayResponses } from '@theme/swagger';
+import { ApiGetTodayThemeResponses } from '@theme/decorator';
 
 @ApiTags('Theme')
 @ApiExtraModels(TodayThemeResponse)
@@ -19,7 +19,7 @@ export class ThemeController {
 
   @Get('today')
   @HttpCode(HttpStatus.OK)
-  @ApiTodayResponses()
+  @ApiGetTodayThemeResponses()
   today(): TodayThemeResponse {
     const { text } = this.themeService.getTodayTheme();
 
