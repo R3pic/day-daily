@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ThemeLogRepository implements ThemeLogRepositoryBase {
-  private readonly logger = new Logger();
+  private readonly logger = new Logger(ThemeLogRepository.name);
 
   constructor(
     @InjectRepository(ThemeLogEntity)

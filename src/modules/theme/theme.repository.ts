@@ -7,7 +7,7 @@ import { ThemeEntity } from '@theme/entities';
 
 @Injectable()
 export class ThemeRepository implements ThemeRepositoryBase {
-  private readonly logger = new Logger();
+  private readonly logger = new Logger(ThemeRepository.name);
   constructor(
     @InjectRepository(ThemeEntity)
     private readonly repository: Repository<ThemeEntity>
