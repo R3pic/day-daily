@@ -12,6 +12,10 @@ export class DiaryRepository implements DiaryRepositoryBase {
     private readonly repository: Repository<DiaryEntity>,
   ) {}
 
+  async isExist(id: string): Promise<boolean> {
+    return this.repository.existsBy({ id });
+  }
+
   async save(diaryEntity: DiaryEntity): Promise<DiaryEntity> {
     return this.repository.save(diaryEntity);
   }
@@ -20,6 +24,12 @@ export class DiaryRepository implements DiaryRepositoryBase {
     return this.repository.find({
       order: { createdAt: 'DESC' },
       take: 5,
+    });
+  }
+
+  async delete(diaryEntity: DiaryEntity): Promise<void>{
+    await this.repository.delete({
+      id: diaryEntity.id,
     });
   }
 }

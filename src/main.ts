@@ -8,6 +8,7 @@ import { swaggerConfig } from '@common/swagger';
 
 import { AppModule } from './app.module';
 import { API_DOC_SLUG } from './constants';
+import { ServiceExceptionFilter } from '@common/filter/exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,11 +23,15 @@ async function bootstrap() {
   const port = configService.get<number>('PORT');
 
   app.setGlobalPrefix('api/v1');
+  app.useGlobalFilters(new ServiceExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     })
   );
   await app.listen(port, () => {

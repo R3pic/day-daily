@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MeController } from '@me/me.controller';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse } from '@diary/responses';
-import { CreateDiaryDto } from '@diary/dto';
+import { CreateDiaryDto, DeleteDiaryDto } from '@diary/dto';
 
 describe('MeController', () => {
   let controller: MeController;
@@ -61,6 +61,19 @@ describe('MeController', () => {
 
       expect(diaryCreateMock).toHaveBeenCalledWith(dto);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('deleteDiary', () => {
+    it('일기를 삭제한다.', async () => {
+      const deleteDto: DeleteDiaryDto = {
+        id: 'uuid',
+      };
+      const mockDelete = mockDiaryService.delete.mockResolvedValue();
+      await controller.deleteDiary(deleteDto);
+
+      expect(mockDelete).toHaveBeenCalledWith(deleteDto);
+      expect(mockDelete).toHaveBeenCalledTimes(1);
     });
   });
 });
