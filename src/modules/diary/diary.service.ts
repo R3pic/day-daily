@@ -4,8 +4,12 @@ import { DiaryRepository } from '@diary/diary.repository';
 import { ThemeService } from '@theme/theme.service';
 import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { DiaryMapper } from '@diary/diary.mapper';
-import { CreateDiaryDto } from '@diary/dto/create-diary.dto';
-import { DiaryDto } from '@diary/dto/diary.dto';
+import { DiaryNotFoundException } from '@diary/exceptions';
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  DiaryDto,
+} from '@diary/dto';
 
 @Injectable()
 export class DiaryService {
@@ -18,21 +22,19 @@ export class DiaryService {
   ) {}
 
   async create(createDiaryDto: CreateDiaryDto): Promise<DiaryDto> {
+    this.logger.log(`create : ${createDiaryDto.title}`);
     const queryRunner = this.queryRunnerFactory.create();
     await queryRunner.connect();
 
     await queryRunner.startTransaction();
     try {
-      this.logger.log(`create : ${createDiaryDto.title}`);
-      const entity = DiaryMapper.createDtoToEntity(createDiaryDto);
-
+      const entity = DiaryMapper.toEntity(createDiaryDto);
       if (createDiaryDto.use_theme)
         entity.theme = this.themeService.getTodayTheme();
 
       const createdEntity = await this.diaryRepository.save(entity);
       return DiaryMapper.toDto(createdEntity);
     } catch (e) {
-      if(e instanceof Error) this.logger.error(e.message);
       await queryRunner.rollbackTransaction();
       throw e;
     } finally {
@@ -47,5 +49,24 @@ export class DiaryService {
     const recentDiaries = await this.diaryRepository.findByRecent();
 
     return recentDiaries.map((diary) => DiaryMapper.toDto(diary));
+  }
+
+  async delete(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
+    this.logger.log('delete');
+    const queryRunner = this.queryRunnerFactory.create();
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction();
+    try {
+      const isExist = await this.diaryRepository.isExist(deleteDiaryDto.id);
+      if (!isExist) throw new DiaryNotFoundException(deleteDiaryDto.id);
+      const diaryEntity = DiaryMapper.toEntity(deleteDiaryDto);
+      await this.diaryRepository.delete(diaryEntity);
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

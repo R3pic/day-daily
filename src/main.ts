@@ -4,6 +4,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 
 import { EnvironmentVariables } from '@common/env';
+import { ServiceExceptionFilter } from '@common/filter';
 import { swaggerConfig } from '@common/swagger';
 
 import { AppModule } from './app.module';
@@ -22,11 +23,15 @@ async function bootstrap() {
   const port = configService.get<number>('PORT');
 
   app.setGlobalPrefix('api/v1');
+  app.useGlobalFilters(new ServiceExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     })
   );
   await app.listen(port, () => {

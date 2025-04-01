@@ -1,0 +1,1 @@
+export { ServiceExceptionFilter } from './exception.filter';

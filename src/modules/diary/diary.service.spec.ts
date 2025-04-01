@@ -7,8 +7,9 @@ import { ThemeEntity } from '@theme/entities';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryEntity } from '@diary/entities';
-import { CreateDiaryDto, DiaryDto } from '@diary/dto';
+import { CreateDiaryDto, DiaryDto, DeleteDiaryDto } from '@diary/dto';
 import { QueryRunnerFactory } from '@database/query-runner.factory';
+import { DiaryNotFoundException } from '@diary/exceptions';
 
 describe('DiaryService', () => {
   let service: DiaryService;
@@ -215,6 +216,32 @@ describe('DiaryService', () => {
 
       expect(actual).toHaveLength(5);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('delete',  () => {
+    it('성공적으로 삭제합니다.', async () => {
+      const removeDto: DeleteDiaryDto = {
+        id: 'id',
+      };
+      const removeEntity: DiaryEntity = DiaryEntity.of({ id: 'id' });
+      mockRepository.isExist.mockResolvedValue(true);
+      const removeMock = mockRepository.delete.mockResolvedValue();
+
+      await service.delete(removeDto);
+
+      expect(removeMock).toHaveBeenCalledWith(removeEntity);
+    });
+
+    it('존재하지 않는 ID를 삭제하려고 할 경우 DiaryNotFound를 던집니다.', async () => {
+      const removeDto: DeleteDiaryDto = {
+        id: 'id',
+      };
+      mockRepository.isExist.mockResolvedValue(false);
+      const removeMock = mockRepository.delete.mockResolvedValue();
+
+      await expect(service.delete(removeDto)).rejects.toThrow(DiaryNotFoundException);
+      expect(removeMock).not.toHaveBeenCalled();
     });
   });
 });

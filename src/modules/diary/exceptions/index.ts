@@ -1,0 +1,1 @@
+export { DiaryNotFoundException } from './diary-not-found-exception';
