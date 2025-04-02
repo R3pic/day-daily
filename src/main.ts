@@ -22,7 +22,6 @@ async function bootstrap() {
   const host = configService.get<string>('HOST');
   const port = configService.get<number>('PORT');
 
-  app.setGlobalPrefix('api/v1');
   app.useGlobalFilters(new ServiceExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
