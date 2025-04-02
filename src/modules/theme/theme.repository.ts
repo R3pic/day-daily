@@ -13,7 +13,7 @@ export class ThemeRepository implements ThemeRepositoryBase {
     private readonly repository: Repository<ThemeEntity>
   ) {}
 
-  findById(id: string): Promise<ThemeEntity | null> {
+  findById(id: number): Promise<ThemeEntity | null> {
     return this.repository.findOneBy({
       id,
     });
@@ -24,7 +24,6 @@ export class ThemeRepository implements ThemeRepositoryBase {
       .select()
       .orderBy('RAND()')
       .limit(1);
-    this.logger.debug(`getRandomTheme Sql : ${queryBuilder.getSql()}`);
 
     return queryBuilder.getOneOrFail();
   }

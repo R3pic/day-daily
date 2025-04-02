@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MeController } from '@me/me.controller';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse } from '@diary/responses';
-import { CreateDiaryDto, DeleteDiaryDto } from '@diary/dto';
+import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryBody, UpdateDiaryDto, UpdateDiaryParam } from '@diary/dto';
 
 describe('MeController', () => {
   let controller: MeController;
@@ -61,6 +61,29 @@ describe('MeController', () => {
 
       expect(diaryCreateMock).toHaveBeenCalledWith(dto);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('updateDiary', () => {
+    it('일기를 수정한다.', async () => {
+      const updateDiaryParam: UpdateDiaryParam = {
+        id: 'id',
+      };
+      const updateDiaryBody: UpdateDiaryBody = {
+        title: '일기 제목',
+        content: '일기 내용',
+      };
+      const updateDiaryDto: UpdateDiaryDto = {
+        ...updateDiaryParam,
+        ...updateDiaryBody,
+      };
+
+      const mockUpdate = mockDiaryService.update.mockResolvedValue();
+
+      await controller.updateDiary(updateDiaryParam, updateDiaryBody);
+
+      expect(mockUpdate).toHaveBeenCalledWith(updateDiaryDto);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
     });
   });
 

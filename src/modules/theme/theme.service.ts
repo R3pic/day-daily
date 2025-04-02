@@ -1,12 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
-import { Environment, EnvironmentVariables } from '@common/env';
-import { hasTimePassed } from '@common/utils/date';
+import { QueryRunnerFactory } from '@database/query-runner.factory';
+import { DateUtil } from '@common/utils/date';
 import { ThemeRepository } from '@theme/theme.repository';
 import { ThemeLogRepository } from '@theme/theme-log.repository';
 import { ThemeEntity } from '@theme/entities';
-import { QueryRunnerFactory } from '@database/query-runner.factory';
 
 @Injectable()
 export class ThemeService implements OnModuleInit {
@@ -16,7 +14,6 @@ export class ThemeService implements OnModuleInit {
   constructor(
     private readonly themeRepository: ThemeRepository,
     private readonly themeLogRepository: ThemeLogRepository,
-    private readonly configService: ConfigService<EnvironmentVariables, true>,
     private readonly queryRunnerFactory: QueryRunnerFactory,
   ) {}
 
@@ -56,20 +53,16 @@ export class ThemeService implements OnModuleInit {
       return;
     }
 
-    const isAfter = () => this.configService.get<Environment>('NODE_ENV') === Environment.Development
-      ? hasTimePassed(lastLog.loggedDate, 'minute', 1)
-      : hasTimePassed(lastLog.loggedDate, 'day', 1);
-
-    if (isAfter()) {
+    if (DateUtil.hasExpired(lastLog.loggedDate)) {
       await this.updateTodayTheme();
       return;
-    }
-
-    this.logger.debug('마지막 로그로부터 새로운 주제를 할당합니다.');
-    const lastTheme = await this.themeRepository.findById(lastLog.theme.id);
-    if (lastTheme) {
-      this.todayTheme = lastTheme;
-      this.logger.debug(`오늘의 주제 : ${this.todayTheme.text}`);
+    } else if (!this.todayTheme) {
+      this.logger.debug('메모리에 존재하지 않아 마지막 로그로부터 새로운 주제를 할당합니다.');
+      const lastTheme = await this.themeRepository.findById(lastLog.theme.id);
+      if (lastTheme) {
+        this.todayTheme = lastTheme;
+        this.logger.debug(`오늘의 주제 : ${this.todayTheme.text}`);
+      }
     }
   }
 }

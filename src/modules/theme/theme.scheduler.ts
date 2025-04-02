@@ -1,11 +1,9 @@
 import { CronJob } from 'cron';
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 
 import { ThemeService } from '@theme/theme.service';
-import { Environment, EnvironmentVariables } from '@common/env';
 
 @Injectable()
 export class ThemeScheduler implements OnModuleInit {
@@ -13,16 +11,11 @@ export class ThemeScheduler implements OnModuleInit {
 
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly configService: ConfigService<EnvironmentVariables, true>,
     private readonly themeService: ThemeService,
   ) {}
 
   onModuleInit(): void {
-    const environment = this.configService.get<Environment>('NODE_ENV');
-
-    const cronExpression = environment === Environment.Development
-      ? CronExpression.EVERY_MINUTE
-      : CronExpression.EVERY_DAY_AT_4AM;
+    const cronExpression = CronExpression.EVERY_DAY_AT_4AM;
 
     const job = new CronJob(cronExpression, () => {
       void this.themeService.triggerUpdateTodayTheme();
