@@ -2,14 +2,22 @@ import { QueryRunner } from 'typeorm';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { ThemeService } from '@theme/theme.service';
 import { ThemeEntity } from '@theme/entities';
 import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryEntity } from '@diary/entities';
-import { CreateDiaryDto, DiaryDto, DeleteDiaryDto } from '@diary/dto';
-import { QueryRunnerFactory } from '@database/query-runner.factory';
-import { DiaryNotFoundException } from '@diary/exceptions';
+import {
+  CreateDiaryDto,
+  DiaryDto,
+  DeleteDiaryDto,
+  UpdateDiaryDto,
+} from '@diary/dto';
+import {
+  DiaryEditExpiredException,
+  DiaryNotFoundException,
+} from '@diary/exceptions';
 
 describe('DiaryService', () => {
   let service: DiaryService;
@@ -43,7 +51,7 @@ describe('DiaryService', () => {
 
     mockQueryRunnerFactory.create.mockReturnValue(mockQueryRunner);
 
-    jest.useFakeTimers().setSystemTime();
+    jest.useFakeTimers().setSystemTime(new Date(2025, 2, 16, 18, 30, 20, 0));
   });
 
   afterEach(() => {
@@ -131,6 +139,64 @@ describe('DiaryService', () => {
       expect(getTodayThemeMock).toHaveBeenCalledTimes(0);
       expect(saveMock).toHaveBeenCalledWith(toSaveEntity);
       expect(saveMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('update', () => {
+    it('일기를 수정합니다.', async () => {
+      const updateDiaryDto: UpdateDiaryDto = {
+        id: 'id',
+        title: '수정된 일기 제목',
+        content: '수정된 일기 내용',
+      };
+      const diaryEntity: DiaryEntity = {
+        id: 'id',
+        theme: null,
+        title: '일기 제목',
+        content: '일기 내용',
+        createdAt: new Date(),
+      };
+      const mockFindById = mockRepository.findById.mockResolvedValue(diaryEntity);
+      const mockUpdate = mockRepository.update.mockResolvedValue();
+      await service.update(updateDiaryDto);
+
+      expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
+      expect(mockUpdate).toHaveBeenCalledWith(updateDiaryDto);
+    });
+
+    it('존재하지 않는 ID를 수정하려고 할 경우 DiaryNotFoundException을 던집니다.', async () => {
+      const updateDiaryDto: UpdateDiaryDto = {
+        id: 'id',
+        title: '수정된 일기 제목',
+        content: '수정된 일기 내용',
+      };
+      const mockFindById = mockRepository.findById.mockResolvedValue(null);
+      const mockUpdate = mockRepository.update.mockResolvedValue();
+
+      await expect(service.update(updateDiaryDto)).rejects.toThrow(DiaryNotFoundException);
+      expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
+      expect(mockUpdate).toHaveBeenCalledTimes(0);
+    });
+
+    it('일기 수정 기간이 지났을 경우 DiaryEditExpiredException을 던집니다.', async () => {
+      const updateDiaryDto: UpdateDiaryDto = {
+        id: 'id',
+        title: '수정된 일기 제목',
+        content: '수정된 일기 내용',
+      };
+      const diaryEntity: DiaryEntity = {
+        id: 'id',
+        theme: null,
+        title: '일기 제목',
+        content: '일기 내용',
+        createdAt: new Date(2025, 2, 14, 5, 0, 0, 0),
+      };
+      const mockFindById = mockRepository.findById.mockResolvedValue(diaryEntity);
+      const mockUpdate = mockRepository.update.mockResolvedValue();
+
+      await expect(service.update(updateDiaryDto)).rejects.toThrow(DiaryEditExpiredException);
+      expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
+      expect(mockUpdate).toHaveBeenCalledTimes(0);
     });
   });
 

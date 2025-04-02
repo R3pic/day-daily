@@ -4,12 +4,13 @@ import { DiaryRepository } from '@diary/diary.repository';
 import { ThemeService } from '@theme/theme.service';
 import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { DiaryMapper } from '@diary/diary.mapper';
-import { DiaryNotFoundException } from '@diary/exceptions';
+import { DiaryEditExpiredException, DiaryNotFoundException } from '@diary/exceptions';
 import {
   CreateDiaryDto,
   DeleteDiaryDto,
-  DiaryDto,
+  DiaryDto, UpdateDiaryDto,
 } from '@diary/dto';
+import { DateUtil } from '@common/utils/date';
 
 @Injectable()
 export class DiaryService {
@@ -40,7 +41,31 @@ export class DiaryService {
     } finally {
       await queryRunner.release();
     }
+  }
 
+  async update(updateDiaryDto: UpdateDiaryDto): Promise<void> {
+    this.logger.log('update');
+
+    const queryRunner = this.queryRunnerFactory.create();
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction();
+
+    try {
+      const diaryEntity = await this.diaryRepository.findById(updateDiaryDto.id);
+
+      if (!diaryEntity) throw new DiaryNotFoundException(updateDiaryDto.id);
+      if (DateUtil.hasExpired(diaryEntity.createdAt)) throw new DiaryEditExpiredException();
+
+      const updateDiaryEntity = DiaryMapper.toEntity(updateDiaryDto);
+
+      await this.diaryRepository.update(updateDiaryEntity);
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findByRecent(): Promise<DiaryDto[]> {
