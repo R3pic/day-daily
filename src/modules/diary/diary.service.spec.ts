@@ -67,7 +67,7 @@ describe('DiaryService', () => {
     let getTodayThemeMock: () => ThemeEntity;
 
     beforeEach(() => {
-      themeEntity = { id: '4', text: '오늘의 주제' };
+      themeEntity = { id: 4, text: '오늘의 주제' };
       getTodayThemeMock = mockThemeService.getTodayTheme.mockReturnValue(themeEntity);
     });
 

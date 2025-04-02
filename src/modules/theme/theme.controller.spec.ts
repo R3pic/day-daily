@@ -28,7 +28,7 @@ describe('ThemeController', () => {
 
   describe('today', () => {
     const theme = {
-      id: '1',
+      id: 1,
       text: '오늘의 주제',
     };
 

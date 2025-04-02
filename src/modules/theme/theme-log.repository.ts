@@ -24,7 +24,9 @@ export class ThemeLogRepository implements ThemeLogRepositoryBase {
     const [log] = await this.repository.find({
       order: { id: 'DESC' },
       take: 1,
+      relations: ['theme'],
     });
+
     return log ?? null;
   }
 }

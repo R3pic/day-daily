@@ -59,7 +59,7 @@ describe('ThemeService', () => {
 
   describe('getTodayTheme', () => {
     const theme: ThemeEntity = {
-      id: '1',
+      id: 1,
       text: '오늘의 주제',
     };
     it('오늘의 주제를 정상적으로 반환한다.', async () => {
@@ -77,7 +77,7 @@ describe('ThemeService', () => {
   describe('updateTodayTheme', () => {
     const theme = '오늘의 주제';
     const themeEntity: ThemeEntity = {
-      id: '1',
+      id: 1,
       text: theme,
     };
     it('오늘의 주제를 업데이트한다.', async () => {
@@ -94,7 +94,7 @@ describe('ThemeService', () => {
   describe('triggerUpdateTodayTheme', () => {
     const theme = '오늘의 주제';
     const themeEntity: ThemeEntity = {
-      id: '1',
+      id: 1,
       text: theme,
     };
 
@@ -117,7 +117,7 @@ describe('ThemeService', () => {
       const themeLogEntity: ThemeLogEntity = {
         id: 1,
         theme: {
-          id: '1',
+          id: 1,
           text: '오늘의 주제',
         },
         loggedDate: DateUtil.date(2025, 4, 1, 4),
@@ -140,7 +140,7 @@ describe('ThemeService', () => {
     it('로그가 존재하며, 오늘이 지나지 않았을 경우 오늘의 주제를 로그로부터 가져온다.', async () => {
       jest.useFakeTimers().setSystemTime(DateUtil.date(2025, 4, 2, 3));
       const theme: ThemeEntity = {
-        id: '1',
+        id: 1,
         text: '오늘의 주제',
       };
       const themeLogEntity: ThemeLogEntity = {
@@ -148,7 +148,7 @@ describe('ThemeService', () => {
         theme,
         loggedDate: DateUtil.date(2025, 4, 1, 4),
       };
-      console.info(themeLogEntity.loggedDate);
+
       mockThemeLogRepository.getLastLog.mockResolvedValue(themeLogEntity);
       const mockFindById = mockThemeRepository.findById.mockResolvedValue(themeEntity);
       const mockGetRandomTheme = mockThemeRepository.getRandomTheme.mockResolvedValue(theme);
