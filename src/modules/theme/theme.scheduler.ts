@@ -15,7 +15,7 @@ export class ThemeScheduler implements OnModuleInit {
   ) {}
 
   onModuleInit(): void {
-    const cronExpression = CronExpression.EVERY_DAY_AT_4AM
+    const cronExpression = CronExpression.EVERY_DAY_AT_4AM;
 
     const job = new CronJob(cronExpression, () => {
       void this.themeService.triggerUpdateTodayTheme();
