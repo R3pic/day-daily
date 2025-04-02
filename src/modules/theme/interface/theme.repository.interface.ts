@@ -1,6 +1,6 @@
 import { ThemeEntity } from '@theme/entities';
 
 export interface ThemeRepositoryBase {
-  findById(id: string): Promise<ThemeEntity | null>;
+  findById(id: number): Promise<ThemeEntity | null>;
   getRandomTheme(): Promise<ThemeEntity>;
 }

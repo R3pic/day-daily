@@ -53,16 +53,16 @@ export class ThemeService implements OnModuleInit {
       return;
     }
 
-    if (!DateUtil.hasExpired(lastLog.loggedDate)) {
+    if (DateUtil.hasExpired(lastLog.loggedDate)) {
       await this.updateTodayTheme();
       return;
-    }
-
-    this.logger.debug('마지막 로그로부터 새로운 주제를 할당합니다.');
-    const lastTheme = await this.themeRepository.findById(lastLog.theme.id);
-    if (lastTheme) {
-      this.todayTheme = lastTheme;
-      this.logger.debug(`오늘의 주제 : ${this.todayTheme.text}`);
+    } else if (!this.todayTheme) {
+      this.logger.debug('메모리에 존재하지 않아 마지막 로그로부터 새로운 주제를 할당합니다.');
+      const lastTheme = await this.themeRepository.findById(lastLog.themeId);
+      if (lastTheme) {
+        this.todayTheme = lastTheme;
+        this.logger.debug(`오늘의 주제 : ${this.todayTheme.text}`);
+      }
     }
   }
 }
