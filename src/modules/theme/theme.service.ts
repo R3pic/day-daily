@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Transactional } from '@nestjs-cls/transactional';
 
-import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { DateUtil } from '@common/utils/date';
 import { ThemeRepository } from '@theme/theme.repository';
 import { ThemeLogRepository } from '@theme/theme-log.repository';
@@ -14,7 +14,6 @@ export class ThemeService implements OnModuleInit {
   constructor(
     private readonly themeRepository: ThemeRepository,
     private readonly themeLogRepository: ThemeLogRepository,
-    private readonly queryRunnerFactory: QueryRunnerFactory,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -25,23 +24,12 @@ export class ThemeService implements OnModuleInit {
     return this.todayTheme;
   }
 
+  @Transactional()
   async updateTodayTheme(): Promise<void> {
-    const queryRunner = this.queryRunnerFactory.create();
-    await queryRunner.connect();
-
-    await queryRunner.startTransaction();
-    try {
-      this.todayTheme = await this.themeRepository.getRandomTheme();
-      await this.themeLogRepository.saveLog(this.todayTheme);
-      this.logger.debug(`오늘의 새로운 주제 : ${this.todayTheme.text}`);
-      await queryRunner.commitTransaction();
-    } catch (e) {
-      if (e instanceof Error) this.logger.error(e.message);
-      await queryRunner.rollbackTransaction();
-      throw e;
-    } finally {
-      await queryRunner.release();
-    }
+    this.logger.debug('updateTodayTheme');
+    this.todayTheme = await this.themeRepository.getRandomTheme();
+    await this.themeLogRepository.saveLog(this.todayTheme);
+    this.logger.debug(`오늘의 새로운 주제 : ${this.todayTheme.text}`);
   }
 
   async triggerUpdateTodayTheme(): Promise<void> {
@@ -54,6 +42,7 @@ export class ThemeService implements OnModuleInit {
     }
 
     if (DateUtil.hasExpired(lastLog.loggedDate)) {
+      this.logger.debug('마지막 로그가 만료되어 새로운 주제를 할당합니다.');
       await this.updateTodayTheme();
       return;
     } else if (!this.todayTheme) {

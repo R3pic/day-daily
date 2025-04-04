@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 
 import { EnvironmentVariables } from '@common/env';
+import { TypeOrmCustomLogger } from '@database/type-orm-logger';
 
 @Injectable()
 export class TypeormConfigService implements TypeOrmOptionsFactory{
@@ -21,6 +22,7 @@ export class TypeormConfigService implements TypeOrmOptionsFactory{
       entities: [],
       synchronize: true, // 프로덕션 환경에서는 무조건 false로 두고 사용할 것
       autoLoadEntities: true,
+      logger: new TypeOrmCustomLogger(),
     };
   }
 }

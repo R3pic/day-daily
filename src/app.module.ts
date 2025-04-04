@@ -1,6 +1,9 @@
+import { ClsModule } from 'nestjs-cls';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
+import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { validate } from '@common/env';
@@ -11,7 +14,6 @@ import { AppService } from './app.service';
 import { MeModule } from '@me/me.module';
 import { DiaryModule } from '@diary/diary.module';
 import { TypeormConfigService } from '@database/typeorm-config.service';
-import { DatabaseModule } from '@database/database.module';
 
 @Module({
   imports: [
@@ -23,11 +25,20 @@ import { DatabaseModule } from '@database/database.module';
     TypeOrmModule.forRootAsync({
       useClass: TypeormConfigService,
     }),
+    ClsModule.forRoot({
+      plugins: [
+        new ClsPluginTransactional({
+          imports: [TypeOrmModule],
+          adapter: new TransactionalAdapterTypeOrm({
+            dataSourceToken: getDataSourceToken(),
+          }),
+        }),
+      ],
+    }),
     ScheduleModule.forRoot(),
     ThemeModule,
     MeModule,
     DiaryModule,
-    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

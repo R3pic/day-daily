@@ -1,4 +1,3 @@
-import { QueryRunner } from 'typeorm';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,7 +6,6 @@ import { ThemeService } from '@theme/theme.service';
 import { ThemeRepository } from '@theme/theme.repository';
 import { ThemeLogRepository } from '@theme/theme-log.repository';
 import { Environment } from '@common/env';
-import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { ThemeEntity, ThemeLogEntity } from '@theme/entities';
 import { DateUtil } from '@common/utils/date';
 
@@ -16,8 +14,6 @@ describe('ThemeService', () => {
   let mockConfigService: MockProxy<ConfigService>;
   let mockThemeRepository: MockProxy<ThemeRepository>;
   let mockThemeLogRepository: MockProxy<ThemeLogRepository>;
-  let mockQueryRunnerFactory: MockProxy<QueryRunnerFactory>;
-  let mockQueryRunner: MockProxy<QueryRunner>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +22,6 @@ describe('ThemeService', () => {
         ThemeRepository,
         ThemeLogRepository,
         ConfigService,
-        QueryRunnerFactory,
       ],
     })
       .overrideProvider(ThemeRepository)
@@ -35,18 +30,12 @@ describe('ThemeService', () => {
       .useValue(mock<ThemeLogRepository>())
       .overrideProvider(ConfigService)
       .useValue(mock<ConfigService>())
-      .overrideProvider(QueryRunnerFactory)
-      .useValue(mock<QueryRunnerFactory>())
       .compile();
 
     service = module.get<ThemeService>(ThemeService);
     mockThemeRepository = module.get(ThemeRepository);
     mockThemeLogRepository = module.get(ThemeLogRepository);
     mockConfigService = module.get(ConfigService);
-    mockQueryRunnerFactory = module.get(QueryRunnerFactory);
-
-    mockQueryRunner = mock<QueryRunner>();
-    mockQueryRunnerFactory.create.mockReturnValue(mockQueryRunner);
   });
 
   afterEach(() => {

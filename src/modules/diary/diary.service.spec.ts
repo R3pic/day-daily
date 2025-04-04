@@ -1,8 +1,6 @@
-import { QueryRunner } from 'typeorm';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { QueryRunnerFactory } from '@database/query-runner.factory';
 import { ThemeService } from '@theme/theme.service';
 import { ThemeEntity } from '@theme/entities';
 import { DiaryService } from '@diary/diary.service';
@@ -23,8 +21,6 @@ describe('DiaryService', () => {
   let service: DiaryService;
   let mockRepository: MockProxy<DiaryRepository>;
   let mockThemeService: MockProxy<ThemeService>;
-  let mockQueryRunnerFactory: MockProxy<QueryRunnerFactory>;
-  let mockQueryRunner: MockProxy<QueryRunner>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,24 +28,17 @@ describe('DiaryService', () => {
         DiaryService,
         DiaryRepository,
         ThemeService,
-        QueryRunnerFactory,
       ],
     })
       .overrideProvider(DiaryRepository)
       .useValue(mock<DiaryRepository>())
       .overrideProvider(ThemeService)
       .useValue(mock<ThemeService>())
-      .overrideProvider(QueryRunnerFactory)
-      .useValue(mock<QueryRunnerFactory>())
       .compile();
 
     service = module.get<DiaryService>(DiaryService);
     mockRepository = module.get(DiaryRepository);
     mockThemeService = module.get(ThemeService);
-    mockQueryRunnerFactory = module.get(QueryRunnerFactory);
-    mockQueryRunner = mock<QueryRunner>();
-
-    mockQueryRunnerFactory.create.mockReturnValue(mockQueryRunner);
 
     jest.useFakeTimers().setSystemTime(new Date(2025, 2, 16, 18, 30, 20, 0));
   });

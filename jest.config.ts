@@ -21,6 +21,7 @@ const config: JestConfigWithTsJest = {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  setupFiles: ['../jest.setup.ts'],
 };
 
 export default config;
