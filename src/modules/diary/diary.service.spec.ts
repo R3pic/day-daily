@@ -13,14 +13,17 @@ import {
   UpdateDiaryDto,
 } from '@diary/dto';
 import {
-  DiaryEditExpiredException,
+  DiaryEditExpiredException, DiaryForbiddenException,
   DiaryNotFoundException,
 } from '@diary/exceptions';
+import { UserEntity } from '@user/entities';
+import { UserService } from '@user/user.service';
 
 describe('DiaryService', () => {
   let service: DiaryService;
   let mockRepository: MockProxy<DiaryRepository>;
   let mockThemeService: MockProxy<ThemeService>;
+  let mockUserService: MockProxy<UserService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,17 +31,21 @@ describe('DiaryService', () => {
         DiaryService,
         DiaryRepository,
         ThemeService,
+        UserService,
       ],
     })
       .overrideProvider(DiaryRepository)
       .useValue(mock<DiaryRepository>())
       .overrideProvider(ThemeService)
       .useValue(mock<ThemeService>())
+      .overrideProvider(UserService)
+      .useValue(mock<UserService>())
       .compile();
 
     service = module.get<DiaryService>(DiaryService);
     mockRepository = module.get(DiaryRepository);
     mockThemeService = module.get(ThemeService);
+    mockUserService = module.get(UserService);
 
     jest.useFakeTimers().setSystemTime(new Date(2025, 2, 16, 18, 30, 20, 0));
   });
@@ -76,6 +83,11 @@ describe('DiaryService', () => {
         theme: themeEntity,
         title: '테스트 제목',
         content: '테스트 내용',
+        author: UserEntity.of({
+          id: 'user-id',
+          fullName: '홍길동',
+          nickname: '길동이',
+        }),
         createdAt: new Date(),
       };
 
@@ -83,6 +95,11 @@ describe('DiaryService', () => {
         id: saveReturnEntity.id,
         title: saveReturnEntity.title,
         content: saveReturnEntity.content,
+        author: {
+          id: 'user-id',
+          full_name: '홍길동',
+          nickname: '길동이',
+        },
         created_at: saveReturnEntity.createdAt,
       };
       const saveMock = mockRepository.save.mockResolvedValue(saveReturnEntity);
@@ -111,6 +128,11 @@ describe('DiaryService', () => {
         theme: undefined,
         title: '테스트 제목',
         content: '테스트 내용',
+        author: UserEntity.of({
+          id: 'user-id',
+          fullName: '홍길동',
+          nickname: '길동이',
+        }),
         createdAt: new Date(),
       });
 
@@ -118,6 +140,11 @@ describe('DiaryService', () => {
         id: saveReturnEntity.id,
         title: saveReturnEntity.title,
         content: saveReturnEntity.content,
+        author: {
+          id: 'user-id',
+          full_name: '홍길동',
+          nickname: '길동이',
+        },
         created_at: saveReturnEntity.createdAt,
       };
       const saveMock = mockRepository.save.mockResolvedValue(saveReturnEntity);
@@ -138,15 +165,22 @@ describe('DiaryService', () => {
         title: '수정된 일기 제목',
         content: '수정된 일기 내용',
       };
+      const author = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
       const diaryEntity: DiaryEntity = {
         id: 'id',
         theme: null,
         title: '일기 제목',
         content: '일기 내용',
+        author,
         createdAt: new Date(),
       };
+      mockUserService.findById.mockResolvedValue(author);
       const mockFindById = mockRepository.findById.mockResolvedValue(diaryEntity);
       const mockUpdate = mockRepository.update.mockResolvedValue();
+
       await service.update(updateDiaryDto);
 
       expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
@@ -173,17 +207,52 @@ describe('DiaryService', () => {
         title: '수정된 일기 제목',
         content: '수정된 일기 내용',
       };
+      const author = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
       const diaryEntity: DiaryEntity = {
         id: 'id',
         theme: null,
         title: '일기 제목',
         content: '일기 내용',
+        author,
         createdAt: new Date(2025, 2, 14, 5, 0, 0, 0),
       };
+      mockUserService.findById.mockResolvedValue(author);
       const mockFindById = mockRepository.findById.mockResolvedValue(diaryEntity);
       const mockUpdate = mockRepository.update.mockResolvedValue();
 
       await expect(service.update(updateDiaryDto)).rejects.toThrow(DiaryEditExpiredException);
+      expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
+      expect(mockUpdate).toHaveBeenCalledTimes(0);
+    });
+
+    it('다른 사용자의 일기를 수정하려고 하면 DiaryForbiddenException이 발생해야 한다.', async () => {
+      const updateDiaryDto: UpdateDiaryDto = {
+        id: 'id',
+        title: '수정된 일기 제목',
+        content: '수정된 일기 내용',
+      };
+      const requestUser = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
+      const diaryEntity: DiaryEntity = {
+        id: 'id',
+        theme: null,
+        title: '일기 제목',
+        content: '일기 내용',
+        author: UserEntity.of({
+          id: 'another-user-id',
+        }),
+        createdAt: new Date(2025, 2, 14, 5, 0, 0, 0),
+      };
+      mockUserService.findById.mockResolvedValue(requestUser);
+      const mockFindById = mockRepository.findById.mockResolvedValue(diaryEntity);
+      const mockUpdate = mockRepository.update.mockResolvedValue();
+
+      await expect(service.update(updateDiaryDto)).rejects.toThrow(DiaryForbiddenException);
       expect(mockFindById).toHaveBeenCalledWith(updateDiaryDto.id);
       expect(mockUpdate).toHaveBeenCalledTimes(0);
     });
@@ -193,12 +262,18 @@ describe('DiaryService', () => {
     let diaryEntities: DiaryEntity[];
 
     beforeEach(() => {
+      const author = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
+
       diaryEntities = [
         {
           id: '1',
           theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           createdAt: new Date(),
         },
         {
@@ -206,6 +281,7 @@ describe('DiaryService', () => {
           theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           createdAt: new Date(),
         },
         {
@@ -213,6 +289,7 @@ describe('DiaryService', () => {
           theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           createdAt: new Date(),
         },
         {
@@ -220,6 +297,7 @@ describe('DiaryService', () => {
           theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           createdAt: new Date(),
         },
         {
@@ -227,6 +305,7 @@ describe('DiaryService', () => {
           theme: null,
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           createdAt: new Date(),
         },
       ];
@@ -238,30 +317,50 @@ describe('DiaryService', () => {
           id: '1',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
         {
           id: '2',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
         {
           id: '3',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
         {
           id: '4',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
         {
           id: '5',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
       ];
@@ -279,23 +378,59 @@ describe('DiaryService', () => {
       const removeDto: DeleteDiaryDto = {
         id: 'id',
       };
-      const removeEntity: DiaryEntity = DiaryEntity.of({ id: 'id' });
-      mockRepository.isExist.mockResolvedValue(true);
-      const removeMock = mockRepository.delete.mockResolvedValue();
+      const userEntity: UserEntity = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
+      const targetEntity: DiaryEntity = DiaryEntity.of({
+        id: 'id',
+        author: userEntity,
+      });
+      mockUserService.findById.mockResolvedValue(userEntity);
+      const findByIdMock = mockRepository.findById.mockResolvedValue(targetEntity);
+      const deleteMock = mockRepository.delete.mockResolvedValue();
 
       await service.delete(removeDto);
 
-      expect(removeMock).toHaveBeenCalledWith(removeEntity);
+      expect(findByIdMock).toHaveBeenCalledWith(removeDto.id);
+      expect(deleteMock).toHaveBeenCalledWith(targetEntity);
     });
 
-    it('존재하지 않는 ID를 삭제하려고 할 경우 DiaryNotFound를 던집니다.', async () => {
+    it('존재하지 않는 ID를 삭제하려고 하면 DiaryNotFound이 발생해야 한다.', async () => {
+      const userEntity: UserEntity = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
       const removeDto: DeleteDiaryDto = {
         id: 'id',
       };
-      mockRepository.isExist.mockResolvedValue(false);
+      mockUserService.findById.mockResolvedValue(userEntity);
+      mockRepository.findById.mockResolvedValue(null);
       const removeMock = mockRepository.delete.mockResolvedValue();
 
       await expect(service.delete(removeDto)).rejects.toThrow(DiaryNotFoundException);
+      expect(removeMock).not.toHaveBeenCalled();
+    });
+
+    it('다른 사용자의 일기를 삭제하려고 하면 DiaryForbiddenException이 발생해야 한다.', async () => {
+      const userEntity: UserEntity = UserEntity.of({
+        id: 'user-id',
+        fullName: '홍길동',
+      });
+      const targetEntity: DiaryEntity = DiaryEntity.of({
+        id: 'id',
+        author: UserEntity.of({
+          id: 'another-user-id',
+        }),
+      });
+      const removeDto: DeleteDiaryDto = {
+        id: 'id',
+      };
+      mockUserService.findById.mockResolvedValue(userEntity);
+      mockRepository.findById.mockResolvedValue(targetEntity);
+      const removeMock = mockRepository.delete.mockResolvedValue();
+
+      await expect(service.delete(removeDto)).rejects.toThrow(DiaryForbiddenException);
       expect(removeMock).not.toHaveBeenCalled();
     });
   });

@@ -37,35 +37,44 @@ describe('DiaryController', () => {
 
   describe('recent', () => {
     it('가장 최근 5개의 일기 목록을 반환한다.', async () => {
+      const author =  {
+        id: 'user-id',
+        full_name: '홍길동',
+      };
       const diaries: DiaryDto[] = [
         {
           id: '1',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           created_at: new Date(),
         },
         {
           id: '2',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           created_at: new Date(),
         },
         {
           id: '3',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           created_at: new Date(),
         },
         {
           id: '4',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           created_at: new Date(),
         },
         {
           id: '5',
           title: '일기 제목 샘플',
           content: '일기 내용 샘플입니다.',
+          author,
           created_at: new Date(),
         },
       ];

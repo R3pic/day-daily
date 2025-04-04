@@ -13,6 +13,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MeModule } from '@me/me.module';
 import { DiaryModule } from '@diary/diary.module';
+import { UserModule } from '@user/user.module';
 import { TypeormConfigService } from '@database/typeorm-config.service';
 
 @Module({
@@ -39,6 +40,7 @@ import { TypeormConfigService } from '@database/typeorm-config.service';
     ThemeModule,
     MeModule,
     DiaryModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
