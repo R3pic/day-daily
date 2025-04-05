@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
+import { routes } from '@common/constants/api-routes';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse } from '@diary/responses';
 import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryDto } from '@diary/dto';
@@ -11,13 +12,13 @@ import { UpdateDiaryParam } from '@diary/dto/update-diary-param.dto';
 
 @ApiTags('Me')
 @ApiExtraModels(CreateDiaryResponse)
-@Controller('me')
+@Controller(routes.me.root)
 export class MeController {
   constructor(
     private readonly diaryService: DiaryService,
   ) {}
 
-  @Post('diaries')
+  @Post(routes.me.diary.root)
   @HttpCode(HttpStatus.CREATED)
   @ApiCreateDiaryResponses()
   async createDiary(
@@ -30,7 +31,7 @@ export class MeController {
     };
   }
 
-  @Patch('diaries/:id')
+  @Patch(routes.me.diary.detail)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiUpdateDiaryResponses()
   async updateDiary(
@@ -42,7 +43,7 @@ export class MeController {
     await this.diaryService.update(updateDiaryDto);
   }
 
-  @Delete('diaries/:id')
+  @Delete(routes.me.diary.detail)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiDeleteDiaryResponses()
   async deleteDiary(

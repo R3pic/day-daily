@@ -1,8 +1,13 @@
+import request, { Response } from 'supertest';
+import { App } from 'supertest/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
+
 import { AppModule } from './../src/app.module';
+import { routes } from '@common/constants/api-routes';
+import { TodayThemeResponse } from '@theme/responses';
+
+type SuperTestResponse<T> = Omit<Response, 'body'> & { body: T };
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -16,11 +21,14 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  describe(`/${routes.theme.root}`, () => {
+    it(`/${routes.theme.today} (GET)`, async () => {
+      const res: SuperTestResponse<TodayThemeResponse> = await request(app.getHttpServer())
+        .get(`/${routes.theme.root}/${routes.theme.today}`)
+        .expect(200)
+        .expect('Content-Type', /json/);
+      expect(typeof res.body.theme).toBe('string');
+    });
   });
 
   afterAll(async () => {
