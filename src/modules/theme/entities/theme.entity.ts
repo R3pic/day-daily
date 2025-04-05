@@ -7,4 +7,8 @@ export class ThemeEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   text: string;
+
+  static of(theme: Partial<ThemeEntity>): ThemeEntity {
+    return Object.assign(new ThemeEntity(), theme);
+  }
 }

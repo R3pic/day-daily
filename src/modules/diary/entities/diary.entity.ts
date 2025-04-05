@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { ThemeEntity } from '@theme/entities';
+import { UserEntity } from '@user/entities';
 
 @Entity({ name: 'diaries' })
 export class DiaryEntity {
@@ -32,6 +33,11 @@ export class DiaryEntity {
   @Expose()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
+
+  @Expose()
+  @ManyToOne(() => UserEntity, { nullable: false })
+  @JoinColumn({ name: 'author' })
+  author: UserEntity;
 
   static of(diary: Partial<DiaryEntity>): DiaryEntity {
     return Object.assign(new DiaryEntity(), diary);

@@ -4,7 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MeController } from '@me/me.controller';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse } from '@diary/responses';
-import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryBody, UpdateDiaryDto, UpdateDiaryParam } from '@diary/dto';
+import {
+  CreateDiaryDto,
+  DeleteDiaryDto,
+  UpdateDiaryBody,
+  UpdateDiaryDto,
+  UpdateDiaryParam,
+} from '@diary/dto';
 
 describe('MeController', () => {
   let controller: MeController;
@@ -47,6 +53,10 @@ describe('MeController', () => {
           id: '1',
           title: '테스트 일기',
           content: '테스트 내용',
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
           created_at: new Date(),
         },
       };
@@ -54,6 +64,10 @@ describe('MeController', () => {
         id: '1',
         title: dto.title,
         content: dto.content,
+        author: {
+          id: 'user-id',
+          full_name: '홍길동',
+        },
         created_at: new Date(),
       });
 

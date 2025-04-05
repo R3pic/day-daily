@@ -1,0 +1,1 @@
+export { UserRepositoryBase } from './user-repository.interface';

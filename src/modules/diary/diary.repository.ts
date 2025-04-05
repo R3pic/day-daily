@@ -39,8 +39,23 @@ export class DiaryRepository implements DiaryRepositoryBase {
 
   async findById(id: string) {
     this.logger.debug(`findById: ${id}`);
-    return this.repository.findOneBy({
-      id,
+    return this.repository.findOne({
+      where: {
+        id,
+      },
+      relations: ['author'],
+    });
+  }
+
+  async findByUserId(id: string) {
+    this.logger.debug(`findByUserId: ${id}`);
+    return this.repository.find({
+      where: {
+        author: {
+          id,
+        },
+      },
+      relations: ['author'],
     });
   }
 
@@ -49,6 +64,7 @@ export class DiaryRepository implements DiaryRepositoryBase {
     return this.repository.find({
       order: { createdAt: 'DESC' },
       take: 5,
+      relations: ['author'],
     });
   }
 
