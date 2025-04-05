@@ -13,7 +13,8 @@ import {
   UpdateDiaryDto,
 } from '@diary/dto';
 import {
-  DiaryEditExpiredException, DiaryForbiddenException,
+  DiaryEditExpiredException,
+  DiaryForbiddenException,
   DiaryNotFoundException,
 } from '@diary/exceptions';
 import { UserEntity } from '@user/entities';
