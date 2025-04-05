@@ -11,7 +11,7 @@ import { ApiGetTodayThemeResponses } from '@theme/decorator';
 
 @ApiTags('Theme')
 @ApiExtraModels(TodayThemeResponse)
-@Controller('theme')
+@Controller('themes')
 export class ThemeController {
   constructor(
     private readonly themeService: ThemeService,
