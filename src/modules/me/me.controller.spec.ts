@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MeController } from '@me/me.controller';
 import { DiaryService } from '@diary/diary.service';
-import { CreateDiaryResponse } from '@diary/responses';
+import { CreateDiaryResponse, GetDiaryByUserResponse } from '@diary/responses';
 import {
   CreateDiaryDto,
-  DeleteDiaryDto,
+  DeleteDiaryDto, DiaryDto,
   UpdateDiaryBody,
   UpdateDiaryDto,
   UpdateDiaryParam,
@@ -39,6 +39,31 @@ describe('MeController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('getDiaries', () => {
+    it('일기를 반환한다.', async () => {
+      const id = 'uuid';
+      const diary: DiaryDto = {
+        id: '1',
+        title: '테스트 일기',
+        content: '테스트 내용',
+        author: {
+          id,
+          full_name: '홍길동',
+        },
+        created_at: new Date(),
+      };
+      const expected: GetDiaryByUserResponse = {
+        diaries: [diary],
+      };
+      const mockFindManyByUserId = mockDiaryService.findManyByUserId.mockResolvedValue([diary]);
+
+      const actual = await controller.getDiaries();
+
+      expect(actual).toEqual(expected);
+      expect(mockFindManyByUserId).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('createDiary', () => {
