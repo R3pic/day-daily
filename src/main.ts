@@ -34,9 +34,9 @@ async function bootstrap() {
     })
   );
   app.enableCors({
-    origin: ['http://localhost:5173'],
+    origin: ['https://localhost:5173'],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
   });
   await app.listen(port, () => {
     logger.log(`server running on : ${host}:${port}`);
