@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
 import { DiaryService } from '@diary/diary.service';
-import { CreateDiaryResponse } from '@diary/responses';
+import { CreateDiaryResponse, GetDiaryByUserResponse } from '@diary/responses';
 import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryDto } from '@diary/dto';
-import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses } from '@diary/decorator';
+import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses, ApiGetByUserResponses } from '@diary/decorator';
 import { ApiUpdateDiaryResponses } from '@diary/decorator/api-update-diary.decorator';
 import { UpdateDiaryBody } from '@diary/dto/update-diary-body.dto';
 import { UpdateDiaryParam } from '@diary/dto/update-diary-param.dto';
@@ -17,6 +17,17 @@ export class MeController {
   constructor(
     private readonly diaryService: DiaryService,
   ) {}
+
+  @Get(routes.me.diary.root)
+  @HttpCode(HttpStatus.OK)
+  @ApiGetByUserResponses()
+  async getDiaries(): Promise<GetDiaryByUserResponse> {
+    const diaries = await this.diaryService.findManyByUserId('3997d213-112a-11f0-b5c6-0242ac120002');
+
+    return {
+      diaries,
+    };
+  }
 
   @Post(routes.me.diary.root)
   @HttpCode(HttpStatus.CREATED)
