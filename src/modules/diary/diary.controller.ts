@@ -5,10 +5,10 @@ import {
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
+import { PaginationQuery } from '@common/dto';
 import { DiaryService } from '@diary/diary.service';
 import { GetRecentDiaryResponse } from '@diary/responses';
 import { ApiGetRecentDiaryResponses } from '@diary/decorator';
-import { PaginationQuery } from '@diary/dto/pagination-query.dto';
 
 @ApiTags('Diary')
 @ApiExtraModels(GetRecentDiaryResponse)
