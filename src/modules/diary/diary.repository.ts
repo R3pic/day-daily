@@ -5,6 +5,7 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 
 import { DiaryRepositoryBase } from '@diary/interfaces';
 import { DiaryEntity } from '@diary/entities';
+import { FindManyOptions } from 'typeorm';
 
 @Injectable()
 export class DiaryRepository implements DiaryRepositoryBase {
@@ -50,6 +51,7 @@ export class DiaryRepository implements DiaryRepositoryBase {
   async findByUserId(id: string) {
     this.logger.debug(`findByUserId: ${id}`);
     return this.repository.find({
+      order: { createdAt: 'DESC' },
       where: {
         author: {
           id,
@@ -59,11 +61,12 @@ export class DiaryRepository implements DiaryRepositoryBase {
     });
   }
 
-  async findByRecent(): Promise<DiaryEntity[]> {
+  async findByRecent(query: Pick<FindManyOptions, 'take' | 'skip'>): Promise<DiaryEntity[]> {
     this.logger.debug('findByRecent');
     return this.repository.find({
       order: { createdAt: 'DESC' },
-      take: 5,
+      skip: query.skip,
+      take: query.take,
       relations: ['author'],
     });
   }
