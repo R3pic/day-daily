@@ -1,5 +1,6 @@
 import { DiaryDto } from '@diary/dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationLinkDto } from '@common/dto/pagination-link.dto';
 
 export class GetRecentDiaryResponse {
   @ApiProperty({
@@ -8,4 +9,6 @@ export class GetRecentDiaryResponse {
     isArray: true,
   })
   diaries: DiaryDto[];
+
+  links: Pick<PaginationLinkDto, 'next'>;
 }

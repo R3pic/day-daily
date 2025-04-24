@@ -18,6 +18,7 @@ import {
 } from '@diary/dto';
 import { DateUtil } from '@common/utils/date';
 import { UserService } from '@user/user.service';
+import { PaginationQuery } from '@diary/dto/pagination-query.dto';
 
 const MOCK_USER = '3997d213-112a-11f0-b5c6-0242ac120002';
 
@@ -71,10 +72,13 @@ export class DiaryService {
     return diaries.map((diary) => DiaryMapper.toDto(diary));
   }
 
-  async findByRecent(): Promise<DiaryDto[]> {
+  async findByRecent(query?: PaginationQuery): Promise<DiaryDto[]> {
     this.logger.debug('findByRecent');
 
-    const recentDiaries = await this.diaryRepository.findByRecent();
+    const recentDiaries = await this.diaryRepository.findByRecent({
+      skip: query?.offset,
+      take: query?.limit || 4,
+    });
 
     return recentDiaries.map((diary) => DiaryMapper.toDto(diary));
   }

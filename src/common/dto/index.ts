@@ -1,0 +1,1 @@
+export { PaginationLinkDto } from './pagination-link.dto';
