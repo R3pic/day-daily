@@ -6,6 +6,7 @@ import { DiaryDto } from '@diary/dto';
 import { UserController } from './user.controller';
 import { GetUserDiariesParam } from '@user/dto';
 import { GetDiaryByUserResponse } from '@diary/responses';
+import { PaginationQuery } from '@common/dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -47,20 +48,28 @@ describe('UserController', () => {
         },
         created_at: new Date(),
       };
+      const defaultQuery: PaginationQuery = {
+        offset: 0,
+        limit: 15,
+      };
       const expected: GetDiaryByUserResponse = {
         diaries: [
           diary,
         ],
+
+        links: {
+          next: '/users/user-id/diaries?offset=15&limit=15',
+        },
       };
       const dto: GetUserDiariesParam = {
-        id: 'id',
+        id: 'user-id',
       };
       const findManyByUserIdMock = mockDiaryService.findManyByUserId.mockResolvedValue([diary]);
 
-      const actual = await controller.getUserDiaries(dto);
+      const actual = await controller.getUserDiaries(dto, {});
 
       expect(actual).toEqual(expected);
-      expect(findManyByUserIdMock).toHaveBeenCalledWith(dto.id);
+      expect(findManyByUserIdMock).toHaveBeenCalledWith(dto.id, defaultQuery);
       expect(findManyByUserIdMock).toHaveBeenCalledTimes(1);
     });
   });

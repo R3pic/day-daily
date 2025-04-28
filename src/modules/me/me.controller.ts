@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
@@ -9,6 +9,7 @@ import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses, ApiGetByUserResponses
 import { ApiUpdateDiaryResponses } from '@diary/decorator/api-update-diary.decorator';
 import { UpdateDiaryBody } from '@diary/dto/update-diary-body.dto';
 import { UpdateDiaryParam } from '@diary/dto/update-diary-param.dto';
+import { PaginationQuery } from '@common/dto';
 
 @ApiTags('Me')
 @ApiExtraModels(CreateDiaryResponse)
@@ -21,11 +22,23 @@ export class MeController {
   @Get(routes.me.diary.root)
   @HttpCode(HttpStatus.OK)
   @ApiGetByUserResponses()
-  async getDiaries(): Promise<GetDiaryByUserResponse> {
-    const diaries = await this.diaryService.findManyByUserId('3997d213-112a-11f0-b5c6-0242ac120002');
+  async getDiaries(
+    @Query() query: PaginationQuery,
+  ): Promise<GetDiaryByUserResponse> {
+    query.offset = query.offset ? query.offset : 0;
+    query.limit = query.limit ? query.limit : 15;
+
+    const diaries = await this.diaryService.findManyByUserId('3997d213-112a-11f0-b5c6-0242ac120002', query);
+
+    const nextOffset = query.offset + query.limit;
+    const limit = query.limit;
 
     return {
       diaries,
+
+      links: {
+        next: `/${routes.me.root}/${routes.me.diary.root}?offset=${nextOffset}&limit=${limit}`,
+      },
     };
   }
 

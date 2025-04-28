@@ -56,10 +56,14 @@ describe('MeController', () => {
       };
       const expected: GetDiaryByUserResponse = {
         diaries: [diary],
+
+        links: {
+          next: '/me/diaries?offset=15&limit=15',
+        },
       };
       const mockFindManyByUserId = mockDiaryService.findManyByUserId.mockResolvedValue([diary]);
 
-      const actual = await controller.getDiaries();
+      const actual = await controller.getDiaries({});
 
       expect(actual).toEqual(expected);
       expect(mockFindManyByUserId).toHaveBeenCalledTimes(1);

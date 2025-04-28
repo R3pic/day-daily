@@ -63,11 +63,14 @@ export class DiaryService {
     await this.diaryRepository.update(updateDiaryEntity);
   }
 
-  async findManyByUserId(id: string): Promise<DiaryDto[]> {
+  async findManyByUserId(id: string, query?: PaginationQuery): Promise<DiaryDto[]> {
     this.logger.debug(`findManyByUserId: ${id}`);
     const user = await this.userService.findById(id);
 
-    const diaries = await this.diaryRepository.findByUserId(user.id);
+    const diaries = await this.diaryRepository.findByUserId(user.id, {
+      skip: query?.offset,
+      take: query?.limit,
+    });
 
     return diaries.map((diary) => DiaryMapper.toDto(diary));
   }
@@ -77,7 +80,7 @@ export class DiaryService {
 
     const recentDiaries = await this.diaryRepository.findByRecent({
       skip: query?.offset,
-      take: query?.limit || 4,
+      take: query?.limit,
     });
 
     return recentDiaries.map((diary) => DiaryMapper.toDto(diary));

@@ -48,10 +48,12 @@ export class DiaryRepository implements DiaryRepositoryBase {
     });
   }
 
-  async findByUserId(id: string) {
+  async findByUserId(id: string, query: Pick<FindManyOptions, 'take' | 'skip'>) {
     this.logger.debug(`findByUserId: ${id}`);
     return this.repository.find({
       order: { createdAt: 'DESC' },
+      skip: query.skip,
+      take: query.take,
       where: {
         author: {
           id,
