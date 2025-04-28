@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { DiaryService } from '@diary/diary.service';
@@ -6,6 +6,7 @@ import { GetDiaryByUserResponse } from '@diary/responses';
 import { ApiGetByUserResponses } from '@diary/decorator';
 import { GetUserDiariesParam } from '@user/dto';
 import { routes } from '@common/constants/api-routes';
+import { PaginationQuery } from '@common/dto';
 
 @ApiTags('User')
 @ApiExtraModels(GetDiaryByUserResponse)
@@ -20,11 +21,22 @@ export class UserController {
   @ApiGetByUserResponses()
   async getUserDiaries(
     @Param() getUserDiariesParam: GetUserDiariesParam,
+    @Query() query: PaginationQuery,
   ): Promise<GetDiaryByUserResponse> {
-    const diaries = await this.diaryService.findManyByUserId(getUserDiariesParam.id);
+    query.offset =  query.offset ? query.offset : 0;
+    query.limit = query.limit ? query.limit : 15;
+
+    const diaries = await this.diaryService.findManyByUserId(getUserDiariesParam.id, query);
+
+    const nextOffset = query.offset + query.limit;
+    const limit = query.limit;
 
     return {
       diaries,
+
+      links: {
+        next: `/${routes.user.root}/${getUserDiariesParam.id}/diaries?offset=${nextOffset}&limit=${limit}`,
+      },
     };
   }
 }
