@@ -1,9 +1,11 @@
-import { IsString, Length } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { RegisterDto } from '@auth/dto';
 
 export class CreateUserDto {
-  @IsString()
-  @Length(1, 30)
-  @ApiProperty({ description: '유저 실명' })
+  email: string;
   full_name: string;
+  password: string;
+
+  static of(registerDto: RegisterDto): CreateUserDto {
+    return Object.assign(new CreateUserDto(), registerDto);
+  }
 }

@@ -17,7 +17,8 @@
       "@theme/*": ["./src/modules/theme/*"],
       "@diary/*": ["./src/modules/diary/*"],
       "@me/*": ["./src/modules/me/*"],
-      "@user/*": ["./src/modules/user/*"]
+      "@user/*": ["./src/modules/user/*"],
+      "@auth/*": ["./src/modules/auth/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

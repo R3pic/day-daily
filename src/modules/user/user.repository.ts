@@ -16,10 +16,22 @@ export class UserRepository implements UserRepositoryBase{
     return this.txHost.tx.getRepository(UserEntity);
   }
 
+  async save(userEntity: UserEntity) {
+    this.logger.debug(`save: ${userEntity.email}`);
+    await this.repository.save(userEntity);
+  }
+
   findById(id: string): Promise<UserEntity | null> {
     this.logger.debug(`findById: ${id}`);
     return this.repository.findOneBy({
       id,
+    });
+  }
+
+  existsByEmail(email: string): Promise<boolean> {
+    this.logger.debug(`existsByEmail: ${email}`);
+    return this.repository.existsBy({
+      email,
     });
   }
 }

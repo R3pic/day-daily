@@ -13,6 +13,7 @@ import { MeModule } from '@me/me.module';
 import { DiaryModule } from '@diary/diary.module';
 import { UserModule } from '@user/user.module';
 import { TypeormConfigService } from '@database/typeorm-config.service';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TypeormConfigService } from '@database/typeorm-config.service';
     MeModule,
     DiaryModule,
     UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

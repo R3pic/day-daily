@@ -1,0 +1,1 @@
+export { DuplicatedEmailException } from './duplicated-email.exception';
