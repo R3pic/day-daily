@@ -31,6 +31,15 @@ export class UserService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<UserEntity> {
+    this.logger.debug(`findByEmail: ${email}`);
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user) throw new UserNotFoundException();
+
+    return user;
+  }
+
   async existsByEmail(email: string): Promise<boolean> {
     this.logger.debug(`existsByEmail: ${email}`);
     return this.userRepository.existsByEmail(email);

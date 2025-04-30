@@ -1,1 +1,0 @@
-export { AuthRepositoryBase } from './auth.repository.interface';

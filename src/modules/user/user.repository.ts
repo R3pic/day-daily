@@ -28,6 +28,13 @@ export class UserRepository implements UserRepositoryBase{
     });
   }
 
+  findByEmail(email: string): Promise<UserEntity | null> {
+    this.logger.debug(`findByEmail: ${email}`);
+    return this.repository.findOneBy({
+      email,
+    });
+  }
+
   existsByEmail(email: string): Promise<boolean> {
     this.logger.debug(`existsByEmail: ${email}`);
     return this.repository.existsBy({

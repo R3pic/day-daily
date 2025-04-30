@@ -1,0 +1,1 @@
+export { JwtOptionFactory } from './jwt-option-factory';

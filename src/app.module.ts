@@ -13,7 +13,7 @@ import { MeModule } from '@me/me.module';
 import { DiaryModule } from '@diary/diary.module';
 import { UserModule } from '@user/user.module';
 import { TypeormConfigService } from '@database/typeorm-config.service';
-import { AuthModule } from './modules/auth/auth.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
