@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { HashService } from '@auth/hash.service';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@user/user.service';
 import { RegisterDto } from '@auth/dto';
 import { CreateUserDto } from '@user/dto';
@@ -10,12 +9,13 @@ import { CredentialException, DuplicatedEmailException } from '@auth/exceptions'
 import { UserEntity } from '@user/entities';
 import { UserNotFoundException } from '@user/exceptions';
 import { RequestUser } from '@common/dto';
+import { TokenService } from '@auth/token.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let userService: MockProxy<UserService>;
   let hashService: MockProxy<HashService>;
-  let jwtService: MockProxy<JwtService>;
+  let tokenService: MockProxy<TokenService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,21 +23,21 @@ describe('AuthService', () => {
         AuthService,
         UserService,
         HashService,
-        JwtService,
+        TokenService,
       ],
     })
       .overrideProvider(UserService)
       .useValue(mock<UserService>())
       .overrideProvider(HashService)
       .useValue(mock<HashService>())
-      .overrideProvider(JwtService)
-      .useValue(mock<JwtService>())
+      .overrideProvider(TokenService)
+      .useValue(mock<TokenService>())
       .compile();
 
     service = module.get<AuthService>(AuthService);
     userService = module.get(UserService);
     hashService = module.get(HashService);
-    jwtService = module.get(JwtService);
+    tokenService = module.get(TokenService);
   });
 
   it('should be defined', () => {
@@ -119,13 +119,13 @@ describe('AuthService', () => {
 
   describe('generateAccessToken', () => {
     it('액세스 토큰을 생성한다.', async () => {
-      const mockSign = jwtService.signAsync.mockResolvedValue('token');
+      const mockGenerateAccessToken = tokenService.generateAccessToken.mockResolvedValue('token');
       const requestUser: RequestUser = {
         id: 'uuid',
       };
       const token = await service.generateAccessToken(requestUser);
 
-      expect(mockSign).toHaveBeenCalledTimes(1);
+      expect(mockGenerateAccessToken).toHaveBeenCalledTimes(1);
       expect(token).toEqual('token');
     });
   });
