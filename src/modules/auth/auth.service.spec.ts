@@ -9,6 +9,7 @@ import { CreateUserDto } from '@user/dto';
 import { CredentialException, DuplicatedEmailException } from '@auth/exceptions';
 import { UserEntity } from '@user/entities';
 import { UserNotFoundException } from '@user/exceptions';
+import { RequestUser } from '@common/dto';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -119,8 +120,10 @@ describe('AuthService', () => {
   describe('generateAccessToken', () => {
     it('액세스 토큰을 생성한다.', async () => {
       const mockSign = jwtService.signAsync.mockResolvedValue('token');
-      const id = 'uuid';
-      const token = await service.generateAccessToken(id);
+      const requestUser: RequestUser = {
+        id: 'uuid',
+      };
+      const token = await service.generateAccessToken(requestUser);
 
       expect(mockSign).toHaveBeenCalledTimes(1);
       expect(token).toEqual('token');
