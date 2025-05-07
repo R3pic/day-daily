@@ -9,7 +9,7 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { RequestUser } from '@common/dto';
 import { UserNotFoundException } from '@user/exceptions';
 import { CredentialException } from '@auth/exceptions/credential.exception';
-import { JwtService } from '@nestjs/jwt';
+import { TokenService } from '@auth/token.service';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly hashService: HashService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Transactional()
@@ -51,9 +51,11 @@ export class AuthService {
     }
   }
 
-  async generateAccessToken(id: string): Promise<string> {
-    this.logger.debug('generateAccessToken');
-    const accessToken = await this.jwtService.signAsync({ id });
-    return accessToken;
+  async generateAccessToken(requestUser: RequestUser): Promise<string> {
+    return this.tokenService.generateAccessToken(requestUser.id);
+  }
+
+  async generateRefreshToken(requestUser: RequestUser): Promise<string> {
+    return this.tokenService.generateRefreshToken(requestUser.id);
   }
 }
