@@ -43,4 +43,10 @@ export class EnvironmentVariables {
 
   @IsString()
   DATABASE_PASSWORD: string;
+
+  @IsString()
+  JWT_ACCESS_SECRET: string;
+
+  @IsString()
+  JWT_REFRESH_SECRET: string;
 }
