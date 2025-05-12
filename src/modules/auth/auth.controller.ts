@@ -32,6 +32,7 @@ export class AuthController {
     const refreshToken = await this.authService.generateRefreshToken(reqUser);
 
     const cookieOptions: CookieOptions = {
+      sameSite: 'none',
       secure: true,
       httpOnly: true,
     };
