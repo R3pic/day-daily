@@ -1,4 +1,4 @@
-import { CookieOptions, Response } from 'express';
+import { Response } from 'express';
 import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Res, UseGuards } from '@nestjs/common';
 
 import { ReqUser } from '@common/decorator';
@@ -6,6 +6,7 @@ import { RequestUser } from '@common/dto';
 import { AuthService } from './auth.service';
 import { LocalGuard, RefreshJwtGuard } from '@auth/guards';
 import { RegisterDto } from '@auth/dto';
+import { cookieOptions } from '@auth/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -31,12 +32,6 @@ export class AuthController {
     const accessToken = await this.authService.generateAccessToken(reqUser);
     const refreshToken = await this.authService.generateRefreshToken(reqUser);
 
-    const cookieOptions: CookieOptions = {
-      sameSite: 'none',
-      secure: true,
-      httpOnly: true,
-    };
-
     res.cookie('access_token', accessToken, cookieOptions);
     res.cookie('refresh_token', refreshToken, cookieOptions);
   }
@@ -51,6 +46,16 @@ export class AuthController {
     this.logger.debug('refresh');
     const accessToken = await this.authService.generateAccessToken(reqUser);
 
-    res.cookie('access_token', accessToken, { secure: true, httpOnly: true });
+    res.cookie('access_token', accessToken, cookieOptions);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  logout(
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    this.logger.debug('logout');
+    res.clearCookie('access_token', cookieOptions);
+    res.clearCookie('refresh_token', cookieOptions);
   }
 }
