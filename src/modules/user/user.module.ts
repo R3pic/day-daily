@@ -5,18 +5,25 @@ import { DiaryModule } from '@diary/diary.module';
 import { UserService } from '@user/user.service';
 import { UserController } from '@user/user.controller';
 import { UserRepository } from '@user/user.repository';
-import { UserEntity } from '@user/entities';
+import { UserEntity, UserSettingEntity } from '@user/entities';
+import { UserSettingService } from '@user/user-setting.service';
+import { UserSettingRepository } from '@user/user-setting.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, UserSettingEntity]),
     forwardRef(() => DiaryModule),
   ],
   controllers: [UserController],
   providers: [
     UserService,
+    UserSettingService,
     UserRepository,
+    UserSettingRepository,
   ],
-  exports: [UserService],
+  exports: [
+    UserService,
+    UserSettingService,
+  ],
 })
 export class UserModule {}

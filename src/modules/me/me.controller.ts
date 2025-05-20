@@ -2,21 +2,28 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
+import { PaginationQuery, RequestUser } from '@common/dto';
+import { ReqUser } from '@common/decorator';
 import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse, GetDiaryByUserResponse } from '@diary/responses';
 import { CreateDiaryDto, DeleteDiaryDto, UpdateDiaryDto } from '@diary/dto';
 import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses, ApiGetByUserResponses } from '@diary/decorator';
-import { ApiUpdateDiaryResponses } from '@diary/decorator/api-update-diary.decorator';
-import { UpdateDiaryBody } from '@diary/dto/update-diary-body.dto';
-import { UpdateDiaryParam } from '@diary/dto/update-diary-param.dto';
-import { PaginationQuery } from '@common/dto';
+import { ApiUpdateDiaryResponses } from '@diary/decorator';
+import { UpdateDiaryBody, UpdateDiaryParam } from '@diary/dto';
+import { UserSettingService } from '@user/user-setting.service';
+import { GetUserSettingResponse } from '@user/responses';
+import { UpdateUserSettingDto, UpdateUserSettingBody } from '@user/dto';
+import { ApiGetUserSettingResponses, ApiPatchUserSettingResponses } from '@user/decorator';
+
+const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
 
 @ApiTags('Me')
-@ApiExtraModels(CreateDiaryResponse)
+@ApiExtraModels(CreateDiaryResponse, GetUserSettingResponse)
 @Controller(routes.me.root)
 export class MeController {
   constructor(
     private readonly diaryService: DiaryService,
+    private readonly userSettingService: UserSettingService,
   ) {}
 
   @Get(routes.me.diary.root)
@@ -74,5 +81,37 @@ export class MeController {
     @Param() deleteDiaryDto: DeleteDiaryDto,
   ) {
     await this.diaryService.delete(deleteDiaryDto);
+  }
+
+  @Get(routes.me.setting.root)
+  @HttpCode(HttpStatus.OK)
+  @ApiGetUserSettingResponses()
+  async getSetting(
+    @ReqUser() requestUser: RequestUser,
+  ): Promise<GetUserSettingResponse> {
+    requestUser = MOCK_REQUEST_USER;
+
+    const settings = await this.userSettingService.findByUser(requestUser);
+
+    return {
+      settings,
+    };
+  }
+
+  @Patch(routes.me.setting.root)
+  @HttpCode(HttpStatus.OK)
+  @ApiPatchUserSettingResponses()
+  async updateSetting(
+    @ReqUser() requestUser: RequestUser,
+    @Body() updateUserSettingBody: UpdateUserSettingBody,
+  ) {
+    requestUser = MOCK_REQUEST_USER;
+
+    const dto = new UpdateUserSettingDto(
+      requestUser,
+      updateUserSettingBody,
+    );
+
+    await this.userSettingService.update(dto);
   }
 }

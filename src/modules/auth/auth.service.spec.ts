@@ -10,10 +10,13 @@ import { UserEntity } from '@user/entities';
 import { UserNotFoundException } from '@user/exceptions';
 import { RequestUser } from '@common/dto';
 import { TokenService } from '@auth/token.service';
+import { UserSettingService } from '@user/user-setting.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let userService: MockProxy<UserService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let userSettingService: MockProxy<UserSettingService>;
   let hashService: MockProxy<HashService>;
   let tokenService: MockProxy<TokenService>;
 
@@ -22,12 +25,15 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         UserService,
+        UserSettingService,
         HashService,
         TokenService,
       ],
     })
       .overrideProvider(UserService)
       .useValue(mock<UserService>())
+      .overrideProvider(UserSettingService)
+      .useValue(mock<UserSettingService>())
       .overrideProvider(HashService)
       .useValue(mock<HashService>())
       .overrideProvider(TokenService)
@@ -36,6 +42,7 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     userService = module.get(UserService);
+    userSettingService = module.get(UserSettingService);
     hashService = module.get(HashService);
     tokenService = module.get(TokenService);
   });

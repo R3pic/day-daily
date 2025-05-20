@@ -11,10 +11,15 @@ import {
   UpdateDiaryDto,
   UpdateDiaryParam,
 } from '@diary/dto';
+import { RequestUser } from '@common/dto';
+import { UserSettingService } from '@user/user-setting.service';
+import { UpdateUserSettingBody, UserSettingDto } from '@user/dto';
+import { GetUserSettingResponse } from '@user/responses';
 
 describe('MeController', () => {
   let controller: MeController;
   let mockDiaryService: MockProxy<DiaryService>;
+  let mockUserSettingService: MockProxy<UserSettingService>;
 
   beforeAll(() => {
     jest.useFakeTimers().setSystemTime();
@@ -27,14 +32,20 @@ describe('MeController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MeController],
-      providers: [DiaryService],
+      providers: [
+        DiaryService,
+        UserSettingService,
+      ],
     })
       .overrideProvider(DiaryService)
       .useValue(mock<DiaryService>())
+      .overrideProvider(UserSettingService)
+      .useValue(mock<UserSettingService>())
       .compile();
 
     controller = module.get<MeController>(MeController);
     mockDiaryService = module.get(DiaryService);
+    mockUserSettingService = module.get(UserSettingService);
   });
 
   it('should be defined', () => {
@@ -140,6 +151,44 @@ describe('MeController', () => {
 
       expect(mockDelete).toHaveBeenCalledWith(deleteDto);
       expect(mockDelete).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getSetting', () => {
+    it('유저 설정을 반환한다.', async () => {
+      const requestUser: RequestUser = {
+        id: 'uuid',
+      };
+      const userSettingDto: UserSettingDto = {
+        hide_profile: false,
+        hide_diaries: false,
+      };
+      const expected: GetUserSettingResponse = {
+        settings: userSettingDto,
+      };
+      const mockFindByUser = mockUserSettingService.findByUser.mockResolvedValue(userSettingDto);
+      const actual = await controller.getSetting(requestUser);
+
+      expect(mockFindByUser).toHaveBeenCalledTimes(1);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('updateSetting', () => {
+    it('유저 설정을 업데이트 한다.', async () => {
+      const requestUser: RequestUser = {
+        id: 'uuid',
+      };
+      const updateUserSettingBody: UpdateUserSettingBody = {
+        hide_profile: true,
+      };
+      const mockUpdateSetting = mockUserSettingService.update.mockResolvedValue();
+      await controller.updateSetting(
+        requestUser,
+        updateUserSettingBody,
+      );
+
+      expect(mockUpdateSetting).toHaveBeenCalledTimes(1);
     });
   });
 });

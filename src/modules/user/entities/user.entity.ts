@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
+import { UserSettingEntity } from '@user/entities/user-setting.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -25,6 +26,10 @@ export class UserEntity {
   @Expose()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
+
+  @OneToOne(() => UserSettingEntity, (setting) => setting.user, { cascade: true })
+  @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
+  userSetting: UserSettingEntity;
 
   static of(user: Partial<UserEntity>): UserEntity {
     return Object.assign(new UserEntity(), user);

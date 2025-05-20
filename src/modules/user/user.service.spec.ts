@@ -4,24 +4,39 @@ import { UserRepository } from '@user/user.repository';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { UserEntity } from '@user/entities';
 import { UserNotFoundException } from '@user/exceptions';
+import { UserSettingService } from '@user/user-setting.service';
+import { UserSettingRepository } from '@user/user-setting.repository';
 
 describe('UserService', () => {
   let service: UserService;
   let mockRepository: MockProxy<UserRepository>;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let userSettingService: MockProxy<UserSettingService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let userSettingRepository: MockProxy<UserSettingRepository>;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
+        UserSettingService,
         UserRepository,
+        UserSettingRepository,
       ],
     })
       .overrideProvider(UserRepository)
       .useValue(mock<UserRepository>())
+      .overrideProvider(UserSettingService)
+      .useValue(mock<UserSettingService>())
+      .overrideProvider(UserSettingRepository)
+      .useValue(mock<UserSettingRepository>())
       .compile();
 
     service = module.get<UserService>(UserService);
     mockRepository = module.get(UserRepository);
+    userSettingService = module.get(UserSettingService);
+    userSettingRepository = module.get(UserSettingRepository);
   });
 
   it('should be defined', () => {
