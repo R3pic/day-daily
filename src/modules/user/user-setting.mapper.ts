@@ -12,12 +12,11 @@ export class UserSettingMapper {
   }
 
   static toEntity(updateDto: UpdateUserSettingDto) {
-    const entity = new UserSettingEntity();
-
-    entity.userId = updateDto.user.id;
-    entity.hideProfile = updateDto.hideProfile;
-    entity.hideDiaries = updateDto.hideDiaries;
-
+    const entity = UserSettingEntity.of({
+      userId: updateDto.user.id,
+      hideDiaries: updateDto.hideDiaries,
+      hideProfile: updateDto.hideProfile,
+    });
     return entity;
   }
 }

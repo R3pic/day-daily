@@ -7,12 +7,12 @@ export class UpdateUserSettingBody {
   })
   @IsOptional()
   @IsBoolean()
-  hide_diary: boolean;
+  hide_diary?: boolean;
 
   @ApiProperty({
     description: '프로필 숨김 여부', example: false,
   })
   @IsOptional()
   @IsBoolean()
-  hide_profile: boolean;
+  hide_profile?: boolean;
 }

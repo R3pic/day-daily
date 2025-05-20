@@ -3,8 +3,8 @@ import { UpdateUserSettingBody } from '@user/dto/update-user-setting-body.dto';
 
 export class UpdateUserSettingDto {
   user: RequestUser;
-  hideDiaries: boolean;
-  hideProfile: boolean;
+  hideDiaries?: boolean;
+  hideProfile?: boolean;
 
   constructor(
     requestUser: RequestUser,
