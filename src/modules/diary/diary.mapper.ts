@@ -2,10 +2,10 @@ import { plainToInstance } from 'class-transformer';
 
 import { DiaryEntity } from '@diary/entities';
 import { CreateDiaryDto } from '@diary/dto/create-diary.dto';
-import { DiaryDto, DeleteDiaryDto } from '@diary/dto';
+import { DiaryDto, DeleteDiaryParamDto } from '@diary/dto';
 
 export class DiaryMapper {
-  static toEntity(dto: CreateDiaryDto | DeleteDiaryDto) {
+  static toEntity(dto: CreateDiaryDto | DeleteDiaryParamDto) {
     return plainToInstance(DiaryEntity, dto, { excludeExtraneousValues: true });
   }
 

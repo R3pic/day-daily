@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
 
 import { DateUtil } from '@common/utils/date';
-import { PaginationQuery } from '@common/dto';
+import { PaginationQuery, RequestUser } from '@common/dto';
 import { ThemeService } from '@theme/theme.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryMapper } from '@diary/diary.mapper';
@@ -14,13 +14,13 @@ import {
 } from '@diary/exceptions';
 import {
   CreateDiaryDto,
-  DeleteDiaryDto,
   DiaryDto,
   UpdateDiaryDto,
+  DeleteDiaryDto,
+  DiaryCountDto,
+  ReadDiaryDto,
 } from '@diary/dto';
 import { UserService } from '@user/user.service';
-
-const MOCK_USER = '3997d213-112a-11f0-b5c6-0242ac120002';
 
 @Injectable()
 export class DiaryService {
@@ -33,9 +33,9 @@ export class DiaryService {
   ) {}
 
   @Transactional()
-  async create(createDiaryDto: CreateDiaryDto): Promise<DiaryDto> {
+  async create(requestUser: RequestUser, createDiaryDto: CreateDiaryDto): Promise<DiaryDto> {
     this.logger.debug(`create: ${util.inspect(createDiaryDto)}`);
-    const user = await this.userService.findById(MOCK_USER);
+    const user = await this.userService.findById(requestUser.id);
     const entity = DiaryMapper.toEntity(createDiaryDto);
 
     entity.author = user;
@@ -48,9 +48,9 @@ export class DiaryService {
   }
 
   @Transactional()
-  async update(updateDiaryDto: UpdateDiaryDto): Promise<void> {
+  async update(requestUser: RequestUser, updateDiaryDto: UpdateDiaryDto): Promise<void> {
     this.logger.debug(`update: ${util.inspect(updateDiaryDto)}`);
-    const user = await this.userService.findById(MOCK_USER);
+    const user = await this.userService.findById(requestUser.id);
 
     const diaryEntity = await this.diaryRepository.findById(updateDiaryDto.id);
 
@@ -63,11 +63,13 @@ export class DiaryService {
     await this.diaryRepository.update(updateDiaryEntity);
   }
 
-  async findManyByUserId(id: string, query?: PaginationQuery): Promise<DiaryDto[]> {
-    this.logger.debug(`findManyByUserId: ${id}`);
-    const user = await this.userService.findById(id);
+  async findManyByUserId(dto: ReadDiaryDto, query?: PaginationQuery): Promise<DiaryDto[]> {
+    this.logger.debug('findManyByUserId');
+    const user = await this.userService.findById(dto.targetUserId);
 
-    if (user.userSetting.hideDiaries) throw new DiaryForbiddenException();
+    if (user.userSetting.hideDiaries &&
+        dto.targetUserId !== dto.requestUser.id
+    ) throw new DiaryForbiddenException();
 
     const diaries = await this.diaryRepository.findByUserId(user.id, {
       skip: query?.offset,
@@ -88,14 +90,21 @@ export class DiaryService {
     return recentDiaries.map((diary) => DiaryMapper.toDto(diary));
   }
 
+  async getCountByUserId(id: string): Promise<DiaryCountDto> {
+    this.logger.debug('getCountByUserId');
+    const count = await this.diaryRepository.getCountByUserId(id);
+
+    return new DiaryCountDto(count);
+  }
+
   @Transactional()
   async delete(deleteDiaryDto: DeleteDiaryDto): Promise<void> {
     this.logger.debug(`delete: ${util.inspect(deleteDiaryDto)}`);
 
-    const user = await this.userService.findById(MOCK_USER);
-    const diary = await this.diaryRepository.findById(deleteDiaryDto.id);
+    const user = await this.userService.findById(deleteDiaryDto.requestUser.id);
+    const diary = await this.diaryRepository.findById(deleteDiaryDto.diaryId);
 
-    if (!diary) throw new DiaryNotFoundException(deleteDiaryDto.id);
+    if (!diary) throw new DiaryNotFoundException(deleteDiaryDto.diaryId);
     if (diary.author.id !== user.id) throw new DiaryForbiddenException();
 
     await this.diaryRepository.delete(diary);
