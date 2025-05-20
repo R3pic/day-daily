@@ -1,8 +1,15 @@
-import { IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { RequestUser } from '@common/dto';
+import { DeleteDiaryParamDto } from '@diary/dto/delete-diary-param.dto';
 
 export class DeleteDiaryDto {
-  @IsUUID()
-  @ApiProperty({ description: '일기 고유 아이디' })
-  id: string;
+  requestUser: RequestUser;
+  diaryId: string;
+
+  constructor(
+    requestUser: RequestUser,
+    deleteDiaryParamDto: DeleteDiaryParamDto,
+  ) {
+    this.requestUser = requestUser;
+    this.diaryId = deleteDiaryParamDto.id;
+  }
 }

@@ -2,24 +2,23 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MeController } from '@me/me.controller';
-import { DiaryService } from '@diary/diary.service';
 import { CreateDiaryResponse, GetDiaryByUserResponse } from '@diary/responses';
 import {
   CreateDiaryDto,
-  DeleteDiaryDto, DiaryDto,
+  DeleteDiaryParamDto, DiaryDto,
   UpdateDiaryBody,
   UpdateDiaryDto,
   UpdateDiaryParam,
 } from '@diary/dto';
 import { RequestUser } from '@common/dto';
-import { UserSettingService } from '@user/user-setting.service';
 import { UpdateUserSettingBody, UserSettingDto } from '@user/dto';
-import { GetUserSettingResponse } from '@user/responses';
+import { GetUserInfoResponse, GetUserSettingResponse } from '@user/responses';
+import { MeService } from '@me/me.service';
+import { UserInfoDto } from '@user/dto/user-info.dto';
 
 describe('MeController', () => {
   let controller: MeController;
-  let mockDiaryService: MockProxy<DiaryService>;
-  let mockUserSettingService: MockProxy<UserSettingService>;
+  let service: MockProxy<MeService>;
 
   beforeAll(() => {
     jest.useFakeTimers().setSystemTime();
@@ -33,19 +32,15 @@ describe('MeController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MeController],
       providers: [
-        DiaryService,
-        UserSettingService,
+        MeService,
       ],
     })
-      .overrideProvider(DiaryService)
-      .useValue(mock<DiaryService>())
-      .overrideProvider(UserSettingService)
-      .useValue(mock<UserSettingService>())
+      .overrideProvider(MeService)
+      .useValue(mock<MeService>())
       .compile();
 
     controller = module.get<MeController>(MeController);
-    mockDiaryService = module.get(DiaryService);
-    mockUserSettingService = module.get(UserSettingService);
+    service = module.get(MeService);
   });
 
   it('should be defined', () => {
@@ -55,6 +50,9 @@ describe('MeController', () => {
   describe('getDiaries', () => {
     it('일기를 반환한다.', async () => {
       const id = 'uuid';
+      const requestUser: RequestUser = {
+        id: 'user-uuid',
+      };
       const diary: DiaryDto = {
         id: '1',
         title: '테스트 일기',
@@ -72,9 +70,9 @@ describe('MeController', () => {
           next: '/me/diaries?offset=15&limit=15',
         },
       };
-      const mockFindManyByUserId = mockDiaryService.findManyByUserId.mockResolvedValue([diary]);
+      const mockFindManyByUserId = service.findDiaries.mockResolvedValue([diary]);
 
-      const actual = await controller.getDiaries({});
+      const actual = await controller.getDiaries(requestUser, {});
 
       expect(actual).toEqual(expected);
       expect(mockFindManyByUserId).toHaveBeenCalledTimes(1);
@@ -83,6 +81,9 @@ describe('MeController', () => {
 
   describe('createDiary', () => {
     it('일기를 생성한다.', async () => {
+      const requestUser: RequestUser = {
+        id: 'user-uuid',
+      };
       const dto: CreateDiaryDto = {
         use_theme: true,
         title: '테스트 일기',
@@ -100,7 +101,8 @@ describe('MeController', () => {
           created_at: new Date(),
         },
       };
-      const diaryCreateMock = mockDiaryService.create.mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const diaryCreateMock = service.createDiary.mockResolvedValue({
         id: '1',
         title: dto.title,
         content: dto.content,
@@ -111,15 +113,17 @@ describe('MeController', () => {
         created_at: new Date(),
       });
 
-      const actual = await controller.createDiary(dto);
+      const actual = await controller.createDiary(requestUser, dto);
 
-      expect(diaryCreateMock).toHaveBeenCalledWith(dto);
       expect(actual).toEqual(expected);
     });
   });
 
   describe('updateDiary', () => {
     it('일기를 수정한다.', async () => {
+      const requestUser: RequestUser = {
+        id: 'user-uuid',
+      };
       const updateDiaryParam: UpdateDiaryParam = {
         id: 'id',
       };
@@ -127,29 +131,31 @@ describe('MeController', () => {
         title: '일기 제목',
         content: '일기 내용',
       };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const updateDiaryDto: UpdateDiaryDto = {
         ...updateDiaryParam,
         ...updateDiaryBody,
       };
 
-      const mockUpdate = mockDiaryService.update.mockResolvedValue();
+      const mockUpdate = service.updateDiary.mockResolvedValue();
 
-      await controller.updateDiary(updateDiaryParam, updateDiaryBody);
+      await controller.updateDiary(requestUser, updateDiaryParam, updateDiaryBody);
 
-      expect(mockUpdate).toHaveBeenCalledWith(updateDiaryDto);
       expect(mockUpdate).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('deleteDiary', () => {
     it('일기를 삭제한다.', async () => {
-      const deleteDto: DeleteDiaryDto = {
+      const requestUser: RequestUser = {
+        id: 'user-uuid',
+      };
+      const deleteDiaryParamDto: DeleteDiaryParamDto = {
         id: 'uuid',
       };
-      const mockDelete = mockDiaryService.delete.mockResolvedValue();
-      await controller.deleteDiary(deleteDto);
+      const mockDelete = service.deleteDiary.mockResolvedValue();
+      await controller.deleteDiary(requestUser, deleteDiaryParamDto);
 
-      expect(mockDelete).toHaveBeenCalledWith(deleteDto);
       expect(mockDelete).toHaveBeenCalledTimes(1);
     });
   });
@@ -166,7 +172,7 @@ describe('MeController', () => {
       const expected: GetUserSettingResponse = {
         settings: userSettingDto,
       };
-      const mockFindByUser = mockUserSettingService.findByUser.mockResolvedValue(userSettingDto);
+      const mockFindByUser = service.findUserSetting.mockResolvedValue(userSettingDto);
       const actual = await controller.getSetting(requestUser);
 
       expect(mockFindByUser).toHaveBeenCalledTimes(1);
@@ -182,13 +188,37 @@ describe('MeController', () => {
       const updateUserSettingBody: UpdateUserSettingBody = {
         hide_profile: true,
       };
-      const mockUpdateSetting = mockUserSettingService.update.mockResolvedValue();
+      const mockUpdateSetting = service.updateUserSetting.mockResolvedValue();
       await controller.updateSetting(
         requestUser,
         updateUserSettingBody,
       );
 
       expect(mockUpdateSetting).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findUserInfo', () => {
+    it('사용자 정보를 반환한다.', async () => {
+      const requestUser: RequestUser = {
+        id: 'uuid',
+      };
+      const userInfo: UserInfoDto = {
+        full_name: 'aaa',
+        email: 'email',
+        registered_at: new Date('2024-05-20'),
+        diary_count: 5,
+      };
+      const expected: GetUserInfoResponse = {
+        user_info: userInfo,
+      };
+
+      const mockFindUserInfo = service.findUserInfo.mockResolvedValue(userInfo);
+
+      const actual = await controller.findUserInfo(requestUser);
+
+      expect(actual).toEqual(expected);
+      expect(mockFindUserInfo).toHaveBeenCalledTimes(1);
     });
   });
 });

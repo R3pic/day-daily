@@ -83,6 +83,14 @@ export class DiaryRepository implements DiaryRepositoryBase {
       .getMany();
   }
 
+  async getCountByUserId(userId: string) {
+    return this.repository.countBy({
+      author: {
+        id: userId,
+      },
+    });
+  }
+
   async delete(diaryEntity: DiaryEntity): Promise<void>{
     this.logger.debug(`delete: ${util.inspect(diaryEntity)}`);
     await this.repository.delete({

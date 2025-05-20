@@ -8,6 +8,7 @@ import { UserRepository } from '@user/user.repository';
 import { UserEntity, UserSettingEntity } from '@user/entities';
 import { UserSettingService } from '@user/user-setting.service';
 import { UserSettingRepository } from '@user/user-setting.repository';
+import { UserInfoService } from '@user/user-info.service';
 
 @Module({
   imports: [
@@ -18,11 +19,13 @@ import { UserSettingRepository } from '@user/user-setting.repository';
   providers: [
     UserService,
     UserSettingService,
+    UserInfoService,
     UserRepository,
     UserSettingRepository,
   ],
   exports: [
     UserService,
+    UserInfoService,
     UserSettingService,
   ],
 })

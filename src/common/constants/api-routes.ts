@@ -27,6 +27,9 @@ export const routes = {
     setting: {
       root: 'setting',
     },
+    info: {
+      root: 'info',
+    },
   },
 } as const;
 
