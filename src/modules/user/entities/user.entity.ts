@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { UserSettingEntity } from '@user/entities/user-setting.entity';
 
@@ -28,7 +28,6 @@ export class UserEntity {
   createdAt: Date;
 
   @OneToOne(() => UserSettingEntity, (setting) => setting.user, { cascade: true })
-  @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
   userSetting: UserSettingEntity;
 
   static of(user: Partial<UserEntity>): UserEntity {
