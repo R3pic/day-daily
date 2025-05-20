@@ -6,11 +6,13 @@ import { UserNotFoundException } from '@user/exceptions';
 import { CreateUserDto } from '@user/dto';
 import { Transactional } from '@nestjs-cls/transactional';
 import { UserMapper } from '@user/user.mapper';
+import { UserSettingService } from '@user/user-setting.service';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
+    private readonly userSettingService: UserSettingService,
     private readonly userRepository: UserRepository,
   ) {}
 
@@ -19,7 +21,8 @@ export class UserService {
     this.logger.debug(`create: ${createUserDto.email}`);
     const entity = UserMapper.toEntity(createUserDto);
     this.logger.debug(entity);
-    await this.userRepository.save(entity);
+    const { id } = await this.userRepository.save(entity);
+    await this.userSettingService.save({ userId: id });
   }
 
   async findById(id: string): Promise<UserEntity> {

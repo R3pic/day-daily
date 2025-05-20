@@ -24,6 +24,9 @@ export const routes = {
       root: 'diaries',
       detail: 'diaries/:id',
     },
+    setting: {
+      root: 'setting',
+    },
   },
 } as const;
 
