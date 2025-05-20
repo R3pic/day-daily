@@ -11,7 +11,7 @@ export class UpdateUserSettingDto {
     body: UpdateUserSettingBody,
   ) {
     this.user = requestUser;
-    this.hideDiaries = body.hide_diary;
+    this.hideDiaries = body.hide_diaries;
     this.hideProfile = body.hide_profile;
   }
 }
