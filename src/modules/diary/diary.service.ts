@@ -67,6 +67,8 @@ export class DiaryService {
     this.logger.debug(`findManyByUserId: ${id}`);
     const user = await this.userService.findById(id);
 
+    if (user.userSetting.hideDiaries) throw new DiaryForbiddenException();
+
     const diaries = await this.diaryRepository.findByUserId(user.id, {
       skip: query?.offset,
       take: query?.limit,

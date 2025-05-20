@@ -65,12 +65,22 @@ export class DiaryRepository implements DiaryRepositoryBase {
 
   async findByRecent(query: Pick<FindManyOptions, 'take' | 'skip'>): Promise<DiaryEntity[]> {
     this.logger.debug('findByRecent');
-    return this.repository.find({
-      order: { createdAt: 'DESC' },
-      skip: query.skip,
-      take: query.take,
-      relations: ['author'],
-    });
+    // return this.repository.find({
+    //   order: { createdAt: 'DESC' },
+    //   skip: query.skip,
+    //   take: query.take,
+    //   relations: ['author'],
+    // });
+
+    return this.repository
+      .createQueryBuilder('diary')
+      .leftJoinAndSelect('diary.author', 'author')
+      .leftJoin('user_setting', 'userSetting', 'userSetting.user_id = author.id')
+      .where('userSetting.hideDiaries = false')
+      .orderBy('diary.createdAt', 'DESC')
+      .skip(query.skip)
+      .take(query.take)
+      .getMany();
   }
 
   async delete(diaryEntity: DiaryEntity): Promise<void>{

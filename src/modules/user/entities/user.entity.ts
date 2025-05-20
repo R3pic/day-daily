@@ -28,7 +28,7 @@ export class UserEntity {
   createdAt: Date;
 
   @OneToOne(() => UserSettingEntity, (setting) => setting.user, { cascade: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
   userSetting: UserSettingEntity;
 
   static of(user: Partial<UserEntity>): UserEntity {
