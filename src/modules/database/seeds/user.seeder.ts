@@ -30,6 +30,7 @@ export default class UserSeeder implements Seeder {
         email: 'test@email.com',
         fullName: '홍길동',
         nickname: '길동이',
+        password: '$2b$10$0ilrBObGGuoKrpOZ849EOevPcp.5wqES4bqtRMkJh6iQAqLMSxZ2q',
       }))
       .orIgnore(true)
       .execute();

@@ -3,15 +3,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { UserEntity } from '@user/entities';
 import { UserRepository } from '@user/user.repository';
 import { UserNotFoundException } from '@user/exceptions';
-import { CreateUserDto } from '@user/dto';
+import { CreateUserDto, UpdatePasswordDto } from '@user/dto';
 import { Transactional } from '@nestjs-cls/transactional';
 import { UserMapper } from '@user/user.mapper';
 import { UserSettingService } from '@user/user-setting.service';
+import { CredentialException } from '@auth/exceptions';
+import { HashService } from '@auth/hash.service';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
+    private readonly hashService: HashService,
     private readonly userSettingService: UserSettingService,
     private readonly userRepository: UserRepository,
   ) {}
@@ -46,5 +49,23 @@ export class UserService {
   async existsByEmail(email: string): Promise<boolean> {
     this.logger.debug(`existsByEmail: ${email}`);
     return this.userRepository.existsByEmail(email);
+  }
+
+  async updatePassword(updatePasswordDto: UpdatePasswordDto): Promise<void> {
+    this.logger.debug(`updatePassword: ${updatePasswordDto.requestUser.id}`);
+    const user = await this.findById(updatePasswordDto.requestUser.id);
+
+    const isEqual = await this.hashService.compare(updatePasswordDto.beforePassword, user.password);
+
+    if (!isEqual) throw new CredentialException();
+
+    const newPassword = await this.hashService.hash(updatePasswordDto.newPassword);
+
+    const updateEntity = new UserEntity();
+
+    updateEntity.id = user.id;
+    updateEntity.password = newPassword;
+
+    await this.userRepository.update(updateEntity);
   }
 }

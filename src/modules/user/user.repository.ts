@@ -21,6 +21,11 @@ export class UserRepository implements UserRepositoryBase {
     return await this.repository.save(userEntity);
   }
 
+  async update(entity: UserEntity): Promise<void> {
+    this.logger.debug('update');
+    await this.repository.update(entity.id, entity);
+  }
+
   async findById(id: string): Promise<UserEntity | null> {
     this.logger.debug(`findById: ${id}`);
     return this.repository.findOne({

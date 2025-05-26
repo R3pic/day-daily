@@ -30,6 +30,9 @@ export const routes = {
     info: {
       root: 'info',
     },
+    password: {
+      root: 'password',
+    },
   },
 } as const;
 

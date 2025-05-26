@@ -4,15 +4,17 @@ import { UserInfoService } from '@user/user-info.service';
 import { UserSettingService } from '@user/user-setting.service';
 import { PaginationQuery, RequestUser } from '@common/dto';
 import { CreateDiaryDto, DeleteDiaryParamDto, ReadDiaryDto, UpdateDiaryDto } from '@diary/dto';
-import { UpdateUserSettingDto, UserSettingDto } from '@user/dto';
+import { UpdatePasswordDto, UpdateUserSettingDto, UserSettingDto } from '@user/dto';
 import { UserInfoDto } from '@user/dto/user-info.dto';
 import { DeleteDiaryDto } from '@diary/dto/delete-diary.dto';
+import { UserService } from '@user/user.service';
 
 @Injectable()
 export class MeService {
   private readonly logger = new Logger(MeService.name);
   constructor(
     private readonly diaryService: DiaryService,
+    private readonly userService: UserService,
     private readonly userInfoService: UserInfoService,
     private readonly userSettingService: UserSettingService,
   ) {}
@@ -57,5 +59,9 @@ export class MeService {
     const userInfo = this.userInfoService.findByUserId(requestUser.id);
 
     return userInfo;
+  }
+
+  async changePassword(updatePasswordDto: UpdatePasswordDto): Promise<void> {
+    await this.userService.updatePassword(updatePasswordDto);
   }
 }

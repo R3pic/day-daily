@@ -10,7 +10,7 @@ import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses, ApiGetByUserResponses
 import { ApiUpdateDiaryResponses } from '@diary/decorator';
 import { UpdateDiaryBody, UpdateDiaryParam } from '@diary/dto';
 import { GetUserSettingResponse } from '@user/responses';
-import { UpdateUserSettingDto, UpdateUserSettingBody } from '@user/dto';
+import { UpdateUserSettingDto, UpdateUserSettingBody, UpdatePasswordBody, UpdatePasswordDto } from '@user/dto';
 import { ApiGetUserSettingResponses, ApiPatchUserSettingResponses } from '@user/decorator';
 import { MeService } from '@me/me.service';
 import { GetUserInfoResponse } from '@user/responses/get-user-info.response';
@@ -138,5 +138,21 @@ export class MeController {
     return {
       user_info: userInfo,
     };
+  }
+
+  @Patch(routes.me.password.root)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @ReqUser() requestUser: RequestUser,
+    @Body() updatePasswordDto: UpdatePasswordBody,
+  ): Promise<void> {
+    requestUser = MOCK_REQUEST_USER;
+
+    const dto = new UpdatePasswordDto(
+      requestUser,
+      updatePasswordDto
+    );
+
+    await this.meService.changePassword(dto);
   }
 }
