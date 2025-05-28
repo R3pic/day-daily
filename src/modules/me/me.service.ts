@@ -3,21 +3,29 @@ import { DiaryService } from '@diary/diary.service';
 import { UserInfoService } from '@user/user-info.service';
 import { UserSettingService } from '@user/user-setting.service';
 import { PaginationQuery, RequestUser } from '@common/dto';
-import { CreateDiaryDto, DeleteDiaryParamDto, ReadDiaryDto, UpdateDiaryDto } from '@diary/dto';
-import { UpdatePasswordDto, UpdateUserSettingDto, UserSettingDto } from '@user/dto';
+import { CreateDiaryDto, DeleteDiaryParamDto, GetCalendarQuery, ReadDiaryDto, UpdateDiaryDto } from '@diary/dto';
+import { UpdatePasswordDto, UpdateUserSettingDto, UserDto, UserSettingDto } from '@user/dto';
 import { UserInfoDto } from '@user/dto/user-info.dto';
 import { DeleteDiaryDto } from '@diary/dto/delete-diary.dto';
 import { UserService } from '@user/user.service';
+import { DiaryCalendarService } from '@diary/diary-calendar.service';
+import { UserMapper } from '@user/user.mapper';
 
 @Injectable()
 export class MeService {
   private readonly logger = new Logger(MeService.name);
   constructor(
     private readonly diaryService: DiaryService,
+    private readonly diaryCalendarService: DiaryCalendarService,
     private readonly userService: UserService,
     private readonly userInfoService: UserInfoService,
     private readonly userSettingService: UserSettingService,
   ) {}
+  async getMe(requestUser: RequestUser): Promise<UserDto> {
+    const user = await this.userService.findById(requestUser.id);
+
+    return UserMapper.toDto(user);
+  }
 
   async findDiaries(requestUser: RequestUser, query: PaginationQuery) {
     const dto = new ReadDiaryDto(
@@ -63,5 +71,11 @@ export class MeService {
 
   async changePassword(updatePasswordDto: UpdatePasswordDto): Promise<void> {
     await this.userService.updatePassword(updatePasswordDto);
+  }
+
+  async getCalendar(requestUser: RequestUser, query: GetCalendarQuery): Promise<boolean[]> {
+    const calendar = await this.diaryCalendarService.findByUserId(requestUser.id, query);
+
+    return calendar;
   }
 }

@@ -1,7 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { UserSettingEntity } from '@user/entities/user-setting.entity';
-
 @Entity({ name: 'users' })
 export class UserEntity {
   @Expose()

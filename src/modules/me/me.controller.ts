@@ -6,24 +6,46 @@ import { PaginationQuery, RequestUser } from '@common/dto';
 import { ReqUser } from '@common/decorator';
 import { CreateDiaryResponse, GetDiaryByUserResponse } from '@diary/responses';
 import { CreateDiaryDto, DeleteDiaryParamDto, UpdateDiaryDto } from '@diary/dto';
-import { ApiCreateDiaryResponses, ApiDeleteDiaryResponses, ApiGetByUserResponses } from '@diary/decorator';
+import {
+  ApiCreateDiaryResponses,
+  ApiDeleteDiaryResponses,
+  ApiGetByUserResponses,
+  ApiGetCalendarResponse,
+} from '@diary/decorator';
 import { ApiUpdateDiaryResponses } from '@diary/decorator';
-import { UpdateDiaryBody, UpdateDiaryParam } from '@diary/dto';
-import { GetUserSettingResponse } from '@user/responses';
+import { UpdateDiaryBody, UpdateDiaryParam, GetCalendarQuery } from '@diary/dto';
+import { GetCalendarResponse } from '@diary/responses';
+import { GetUserSettingResponse, GetUserInfoResponse } from '@user/responses';
 import { UpdateUserSettingDto, UpdateUserSettingBody, UpdatePasswordBody, UpdatePasswordDto } from '@user/dto';
-import { ApiGetUserSettingResponses, ApiPatchUserSettingResponses } from '@user/decorator';
+import { ApiGetUserInfoResponse, ApiGetUserSettingResponses, ApiPatchUserSettingResponses } from '@user/decorator';
 import { MeService } from '@me/me.service';
-import { GetUserInfoResponse } from '@user/responses/get-user-info.response';
+import { GetMeResponse } from '@me/resposnes';
+import { ApiGetMeResponses } from '@me/decorator';
 
 const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
 
 @ApiTags('Me')
-@ApiExtraModels(CreateDiaryResponse, GetUserSettingResponse)
+@ApiExtraModels(GetMeResponse, CreateDiaryResponse, GetUserSettingResponse, GetUserInfoResponse, GetCalendarResponse)
 @Controller(routes.me.root)
 export class MeController {
   constructor(
     private readonly meService: MeService,
   ) {}
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiGetMeResponses()
+  async getMe(
+    @ReqUser() requestUser: RequestUser,
+  ): Promise<GetMeResponse> {
+    requestUser = MOCK_REQUEST_USER;
+
+    const user = await this.meService.getMe(requestUser);
+
+    return {
+      user,
+    };
+  }
 
   @Get(routes.me.diary.root)
   @HttpCode(HttpStatus.OK)
@@ -128,6 +150,7 @@ export class MeController {
 
   @Get(routes.me.info.root)
   @HttpCode(HttpStatus.OK)
+  @ApiGetUserInfoResponse()
   async findUserInfo(
     @ReqUser() requestUser: RequestUser,
   ): Promise<GetUserInfoResponse> {
@@ -154,5 +177,29 @@ export class MeController {
     );
 
     await this.meService.changePassword(dto);
+  }
+
+  @Get(routes.me.diary.calendar.root)
+  @HttpCode(HttpStatus.OK)
+  @ApiGetCalendarResponse()
+  async getCalendar(
+    @ReqUser() requestUser: RequestUser,
+    @Query() query: GetCalendarQuery,
+  ): Promise<GetCalendarResponse> {
+    requestUser = MOCK_REQUEST_USER;
+
+    const year = query.year;
+    const month = query.month;
+
+    const calendar = await this.meService.getCalendar(requestUser, query);
+
+    return {
+      calendar,
+
+      links: {
+        next: `/${routes.me.root}/${routes.me.diary.root}/${routes.me.diary.calendar.root}?year=${year}&month=${month + 1}`,
+        prev: `/${routes.me.root}/${routes.me.diary.root}/${routes.me.diary.calendar.root}?year=${year}&month=${month - 1}`,
+      },
+    };
   }
 }

@@ -8,3 +8,5 @@ export { DeleteDiaryParamDto } from './delete-diary-param.dto';
 export { DeleteDiaryDto } from './delete-diary.dto';
 
 export { DiaryCountDto } from './diary-count.dto';
+
+export { GetCalendarQuery } from './get-calendar.query';

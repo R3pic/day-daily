@@ -7,6 +7,8 @@ import { DiaryService } from '@diary/diary.service';
 import { DiaryRepository } from '@diary/diary.repository';
 import { DiaryEntity } from '@diary/entities';
 import { UserModule } from '@user/user.module';
+import { DiaryCalendarService } from '@diary/diary-calendar.service';
+import { DiaryCalendarRepository } from '@diary/diary-calendar.repository';
 
 @Module({
   imports: [
@@ -17,8 +19,13 @@ import { UserModule } from '@user/user.module';
   providers: [
     DiaryService,
     DiaryRepository,
+    DiaryCalendarService,
+    DiaryCalendarRepository,
   ],
-  exports: [DiaryService],
+  exports: [
+    DiaryService,
+    DiaryCalendarService,
+  ],
   controllers: [DiaryController],
 })
 export class DiaryModule {}

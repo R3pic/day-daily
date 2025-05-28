@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 
@@ -13,7 +13,7 @@ export class DateUtil {
 
   static date(
     year?: number,
-    month: number = 0,
+    month: number = 1,
     day: number = 1,
     hour: number = 0,
     minute: number = 0,
@@ -21,9 +21,31 @@ export class DateUtil {
   ): Date {
     if (!year)
       return this.now();
-    return dayjs(new Date(year, month, day, hour, minute, second)).toDate();
+    return dayjs(new Date(year, month - 1, day, hour, minute, second)).toDate();
   }
 
+  static dayjs(
+    year?: number,
+    month: number = 1,
+    day: number = 1,
+    hour: number = 0,
+    minute: number = 0,
+    second: number = 0
+  ): Dayjs {
+    if (!year)
+      return dayjs();
+    return dayjs()
+      .set('year', year)
+      .set('month', month - 1)
+      .set('d', day)
+      .set('h', hour)
+      .set('minute', minute)
+      .set('second', second);
+  }
+
+  static fromString(str: string): Dayjs {
+    return dayjs(str);
+  }
 
   static hasExpired(target: Date, now: dayjs.Dayjs = dayjs()) {
     const expireDate = dayjs(target)
