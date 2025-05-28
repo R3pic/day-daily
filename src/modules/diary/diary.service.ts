@@ -79,10 +79,10 @@ export class DiaryService {
     return diaries.map((diary) => DiaryMapper.toDto(diary));
   }
 
-  async findByRecent(query?: PaginationQuery): Promise<DiaryDto[]> {
+  async findByRecent(requestUser: RequestUser | null, query?: PaginationQuery): Promise<DiaryDto[]> {
     this.logger.debug('findByRecent');
 
-    const recentDiaries = await this.diaryRepository.findByRecent({
+    const recentDiaries = await this.diaryRepository.findByRecent(requestUser, {
       skip: query?.offset,
       take: query?.limit,
     });

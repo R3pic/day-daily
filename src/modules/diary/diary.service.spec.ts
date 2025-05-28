@@ -386,7 +386,7 @@ describe('DiaryService', () => {
       ];
       mockRepository.findByRecent.mockResolvedValue(diaryEntities);
 
-      const actual = await service.findByRecent();
+      const actual = await service.findByRecent(null);
 
       expect(actual).toHaveLength(5);
       expect(actual).toEqual(expected);

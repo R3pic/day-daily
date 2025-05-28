@@ -6,6 +6,7 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 import { DiaryRepositoryBase } from '@diary/interfaces';
 import { DiaryEntity } from '@diary/entities';
 import { FindManyOptions } from 'typeorm';
+import { RequestUser } from '@common/dto';
 
 @Injectable()
 export class DiaryRepository implements DiaryRepositoryBase {
@@ -63,7 +64,10 @@ export class DiaryRepository implements DiaryRepositoryBase {
     });
   }
 
-  async findByRecent(query: Pick<FindManyOptions, 'take' | 'skip'>): Promise<DiaryEntity[]> {
+  async findByRecent(
+    requestUser: RequestUser | null,
+    query: Pick<FindManyOptions, 'take' | 'skip'>
+  ): Promise<DiaryEntity[]> {
     this.logger.debug('findByRecent');
     // return this.repository.find({
     //   order: { createdAt: 'DESC' },
@@ -77,6 +81,7 @@ export class DiaryRepository implements DiaryRepositoryBase {
       .leftJoinAndSelect('diary.author', 'author')
       .leftJoin('user_setting', 'userSetting', 'userSetting.user_id = author.id')
       .where('userSetting.hideDiaries = false')
+      .andWhere('author.id != :requestUserId', { requestUserId: requestUser?.id ?? '' })
       .orderBy('diary.createdAt', 'DESC')
       .skip(query.skip)
       .take(query.take)

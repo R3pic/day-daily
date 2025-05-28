@@ -80,7 +80,7 @@ describe('DiaryController', () => {
       };
       mockService.findByRecent.mockResolvedValue(diaries);
 
-      const actual = await controller.recent({});
+      const actual = await controller.recent(null, {});
 
       expect(actual.diaries).toHaveLength(4);
       expect(actual).toEqual(expected);
@@ -133,7 +133,7 @@ describe('DiaryController', () => {
       };
       mockService.findByRecent.mockResolvedValue(diaries);
 
-      const actual = await controller.recent(query);
+      const actual = await controller.recent(null, query);
 
       expect(actual.diaries).toHaveLength(4);
       expect(actual).toEqual(expected);
