@@ -2,7 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -11,6 +11,7 @@ import {
 import { ThemeEntity } from '@theme/entities';
 import { UserEntity } from '@user/entities';
 
+@Index(['author', 'createdAt'])
 @Entity({ name: 'diaries' })
 export class DiaryEntity {
   @Expose()
@@ -31,10 +32,12 @@ export class DiaryEntity {
   content: string;
 
   @Expose()
+  @Index()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
 
   @Expose()
+  @Index()
   @ManyToOne(() => UserEntity, { nullable: false })
   @JoinColumn({ name: 'author' })
   author: UserEntity;

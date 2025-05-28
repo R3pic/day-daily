@@ -49,4 +49,11 @@ export class UserRepository implements UserRepositoryBase {
       email,
     });
   }
+
+  async existsById(id: string): Promise<boolean> {
+    this.logger.debug(`existsById: ${id}`);
+    return this.repository.existsBy({
+      id,
+    });
+  }
 }

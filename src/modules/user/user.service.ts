@@ -51,6 +51,11 @@ export class UserService {
     return this.userRepository.existsByEmail(email);
   }
 
+  async existsById(id: string): Promise<boolean> {
+    this.logger.debug(`existsById: ${id}`);
+    return this.userRepository.existsById(id);
+  }
+
   async updatePassword(updatePasswordDto: UpdatePasswordDto): Promise<void> {
     this.logger.debug(`updatePassword: ${updatePasswordDto.requestUser.id}`);
     const user = await this.findById(updatePasswordDto.requestUser.id);

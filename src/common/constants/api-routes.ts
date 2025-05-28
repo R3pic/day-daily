@@ -23,6 +23,9 @@ export const routes = {
     diary: {
       root: 'diaries',
       detail: 'diaries/:id',
+      calendar: {
+        root: 'calendar',
+      },
     },
     setting: {
       root: 'setting',
