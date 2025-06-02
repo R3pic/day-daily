@@ -18,11 +18,13 @@ export class DiaryCalendarService {
     await this.userService.existsById(id);
 
     const days = await this.repository.findWrittenDays(id, query);
+    this.logger.debug(days);
 
-    const lastDate = DateUtil.dayjs(query.year, query.month, 0);
+    const lastDate = DateUtil.fromString(`${query.year}-${query.month}`);
+    const daysInMonth = lastDate.daysInMonth();
 
     const calendar = Array
-      .from({ length: lastDate.daysInMonth() })
+      .from({ length: daysInMonth })
       .map((_, i) => days.has(i + 1));
 
     // calendar.forEach((v, i) => this.logger.debug(`${i + 1}: ${v}`));
