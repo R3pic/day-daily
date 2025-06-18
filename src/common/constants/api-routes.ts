@@ -27,6 +27,9 @@ export const routes = {
         root: 'calendar',
       },
     },
+    profile: {
+      root: 'profile',
+    },
     setting: {
       root: 'setting',
     },
