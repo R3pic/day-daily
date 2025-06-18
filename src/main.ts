@@ -19,7 +19,7 @@ async function bootstrap() {
 
   setUpGlobal(app);
   setUpCors(app);
-  setUpSwagger(app, configService.get<Environment>('NODE_ENV'));
+  setUpSwagger(app, configService.get<Environment>('NODE_ENV'), configService.get<string>('HOST'));
 
   await app.listen(port);
 }

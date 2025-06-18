@@ -1,7 +1,7 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 import { Environment } from '@common/env';
 
-export function createSwaggerConfig(NODE_ENV: Environment) {
+export function createSwaggerConfig(NODE_ENV: Environment, HOST: string) {
   const documentBuilder = new DocumentBuilder()
     .setTitle('day-daily API')
     .setDescription('day-daily를 위한 API 문서')
@@ -12,7 +12,7 @@ export function createSwaggerConfig(NODE_ENV: Environment) {
     .addTag('Me');
 
   if (NODE_ENV === Environment.Production)
-    documentBuilder.addServer('yehwan/app1');
+    documentBuilder.addServer(HOST);
 
   return documentBuilder.build();
 }
