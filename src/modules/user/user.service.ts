@@ -9,6 +9,8 @@ import { UserMapper } from '@user/user.mapper';
 import { UserSettingService } from '@user/user-setting.service';
 import { CredentialException } from '@auth/exceptions';
 import { HashService } from '@auth/hash.service';
+import { UpdateProfileAvatarDto } from '@me/dto';
+import { FileService } from '@file/file.service';
 
 @Injectable()
 export class UserService {
@@ -16,6 +18,7 @@ export class UserService {
   constructor(
     private readonly hashService: HashService,
     private readonly userSettingService: UserSettingService,
+    private readonly fileService: FileService,
     private readonly userRepository: UserRepository,
   ) {}
 
@@ -72,5 +75,17 @@ export class UserService {
     updateEntity.password = newPassword;
 
     await this.userRepository.update(updateEntity);
+  }
+
+  async updateProfileAvatar(updateProfileAvatarDto: UpdateProfileAvatarDto) {
+    this.logger.debug('updateProfileAvatar');
+    this.logger.debug(updateProfileAvatarDto);
+
+    const user = await this.userRepository.findById(updateProfileAvatarDto.requestUser.id);
+
+    if (user?.avatar) await this.fileService.deleteAvatar(user.avatar);
+
+    const entity = UserMapper.profileAvatarToEntity(updateProfileAvatarDto);
+    await this.userRepository.update(entity);
   }
 }

@@ -7,6 +7,7 @@ import { UserNotFoundException } from '@user/exceptions';
 import { UserSettingService } from '@user/user-setting.service';
 import { UserSettingRepository } from '@user/user-setting.repository';
 import { HashService } from '@auth/hash.service';
+import { FileService } from '@file/file.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -18,6 +19,8 @@ describe('UserService', () => {
   let userSettingRepository: MockProxy<UserSettingRepository>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let hashService: MockProxy<HashService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let fileService: MockProxy<FileService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +30,7 @@ describe('UserService', () => {
         UserRepository,
         UserSettingRepository,
         HashService,
+        FileService,
       ],
     })
       .overrideProvider(UserRepository)

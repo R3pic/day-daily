@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { EnvironmentVariables } from '@common/env';
 
@@ -11,12 +12,12 @@ import {
 } from './bootstrap';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get<ConfigService<EnvironmentVariables, true>>(ConfigService);
 
   const port = configService.get<number>('PORT');
 
-  setUpGlobal(app, configService);
+  setUpGlobal(app);
   setUpCors(app);
   setUpSwagger(app);
 

@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query, UploadedFile, UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
@@ -21,6 +33,11 @@ import { ApiGetUserInfoResponse, ApiGetUserSettingResponses, ApiPatchUserSetting
 import { MeService } from '@me/me.service';
 import { GetMeResponse } from '@me/resposnes';
 import { ApiGetMeResponses } from '@me/decorator';
+import { ApiPatchMeProfileResponses } from '@me/decorator/patch-me-profile.decorator';
+import { AvatarValidationPipe } from '@me/pipe';
+import { FormDataOnlyGuard } from '@common/guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FILE_UPLOAD_PATH } from '@multer/constants';
 
 const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
 
@@ -201,5 +218,24 @@ export class MeController {
         prev: `/${routes.me.root}/${routes.me.diary.root}/${routes.me.diary.calendar.root}?year=${year}&month=${month - 1}`,
       },
     };
+  }
+
+  @Patch(routes.me.profile.root)
+  @UseGuards(FormDataOnlyGuard)
+  @UseInterceptors(FileInterceptor('avatar', {
+    dest: FILE_UPLOAD_PATH,
+  }))
+  @HttpCode(HttpStatus.OK)
+  @ApiPatchMeProfileResponses()
+  async updateProfileAvatar(
+    @ReqUser() requestUser: RequestUser,
+    @UploadedFile(new AvatarValidationPipe()) avatar: Express.Multer.File,
+  ) {
+    requestUser = MOCK_REQUEST_USER;
+
+    await this.meService.updateProfileAvatar({
+      requestUser,
+      avatar,
+    });
   }
 }

@@ -1,0 +1,1 @@
+export { UpdateProfileAvatarDto } from './update-profile-avatar.dto';

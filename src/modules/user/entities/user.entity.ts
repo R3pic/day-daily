@@ -19,6 +19,10 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 30, nullable: true })
   nickname: string | null;
 
+  @Expose()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  avatar: string | null;
+
   @Column({ type: 'varchar', length: 255, nullable: false })
   password: string;
 

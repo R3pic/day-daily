@@ -1,0 +1,1 @@
+export { AvatarValidationPipe } from './avatar-validation.pipe';
