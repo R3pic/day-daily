@@ -13,4 +13,8 @@ export class UserDto {
   @Expose()
   @ApiProperty({ description: '사용자 닉네임' })
   nickname?: string;
+
+  @Expose()
+  @ApiProperty({ description: '사용자 아바타' })
+  avatar?: string;
 }

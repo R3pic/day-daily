@@ -10,6 +10,7 @@ import { DeleteDiaryDto } from '@diary/dto/delete-diary.dto';
 import { UserService } from '@user/user.service';
 import { DiaryCalendarService } from '@diary/diary-calendar.service';
 import { UserMapper } from '@user/user.mapper';
+import { UpdateProfileAvatarDto } from '@me/dto';
 
 @Injectable()
 export class MeService {
@@ -77,5 +78,9 @@ export class MeService {
     const calendar = await this.diaryCalendarService.findByUserId(requestUser.id, query);
 
     return calendar;
+  }
+
+  async updateProfileAvatar(updateProfileAvatarDto: UpdateProfileAvatarDto) {
+    await this.userService.updateProfileAvatar(updateProfileAvatarDto);
   }
 }

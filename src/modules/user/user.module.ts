@@ -10,11 +10,13 @@ import { UserSettingService } from '@user/user-setting.service';
 import { UserSettingRepository } from '@user/user-setting.repository';
 import { UserInfoService } from '@user/user-info.service';
 import { HashService } from '@auth/hash.service';
+import { FileModule } from '@file/file.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, UserSettingEntity]),
     forwardRef(() => DiaryModule),
+    FileModule,
   ],
   controllers: [UserController],
   providers: [

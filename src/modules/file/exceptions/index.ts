@@ -1,0 +1,1 @@
+export { AvatarNotFoundException } from './avatar-not-found.exception';

@@ -18,7 +18,9 @@
       "@diary/*": ["./src/modules/diary/*"],
       "@me/*": ["./src/modules/me/*"],
       "@user/*": ["./src/modules/user/*"],
-      "@auth/*": ["./src/modules/auth/*"]
+      "@auth/*": ["./src/modules/auth/*"],
+      "@multer/*": ["./src/modules/multer/*"],
+      "@file/*": ["./src/modules/file/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

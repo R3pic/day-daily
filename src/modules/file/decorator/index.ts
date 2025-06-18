@@ -1,0 +1,1 @@
+export { ApiGetAvatarResponses } from './get-avatar.decorator';
