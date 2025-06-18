@@ -1,1 +1,1 @@
-export { swaggerConfig } from './config';
+export { createSwaggerConfig } from './config';
