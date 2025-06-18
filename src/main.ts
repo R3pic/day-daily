@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-import { EnvironmentVariables } from '@common/env';
+import { Environment, EnvironmentVariables } from '@common/env';
 
 import { AppModule } from './app.module';
 import {
@@ -19,7 +19,7 @@ async function bootstrap() {
 
   setUpGlobal(app);
   setUpCors(app);
-  setUpSwagger(app);
+  setUpSwagger(app, configService.get<Environment>('NODE_ENV'));
 
   await app.listen(port);
 }
