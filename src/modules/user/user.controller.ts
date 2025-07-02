@@ -24,7 +24,7 @@ export class UserController {
   @UseGuards(GuestJwtGuard)
   @ApiGetByUserResponses()
   async getUserDiaries(
-    @ReqUser() requestUser: RequestUser,
+    @ReqUser() requestUser: RequestUser | null,
     @Param() getUserDiariesParam: GetUserDiariesParam,
     @Query() query: PaginationQuery,
   ): Promise<GetDiaryByUserResponse> {
