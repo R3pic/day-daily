@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtOptionFactory } from '@auth/factory';
 import { RefreshJwtStrategy } from '@auth/strategies/refresh-jwt.strategy';
 import { TokenService } from '@auth/token.service';
+import { AccessJwtStrategy } from '@auth/strategies/access-jwt.strategy';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TokenService } from '@auth/token.service';
     HashService,
     TokenService,
     LocalStrategy,
+    AccessJwtStrategy,
     RefreshJwtStrategy,
   ],
 })

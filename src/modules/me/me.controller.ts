@@ -38,6 +38,7 @@ import { AvatarValidationPipe } from '@me/pipe';
 import { FormDataOnlyGuard } from '@common/guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FILE_UPLOAD_PATH } from '@multer/constants';
+import { AccessJwtGuard } from '@auth/guards/access-jwt.guard';
 
 const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
 
@@ -51,12 +52,11 @@ export class MeController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiGetMeResponses()
   async getMe(
     @ReqUser() requestUser: RequestUser,
   ): Promise<GetMeResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     const user = await this.meService.getMe(requestUser);
 
     return {
@@ -66,13 +66,12 @@ export class MeController {
 
   @Get(routes.me.diary.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiGetByUserResponses()
   async getDiaries(
     @ReqUser() requestUser: RequestUser,
     @Query() query: PaginationQuery,
   ): Promise<GetDiaryByUserResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     query.offset = query.offset ? query.offset : 0;
     query.limit = query.limit ? query.limit : 15;
 
@@ -92,13 +91,12 @@ export class MeController {
 
   @Post(routes.me.diary.root)
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AccessJwtGuard)
   @ApiCreateDiaryResponses()
   async createDiary(
     @ReqUser() requestUser: RequestUser,
     @Body() createDiaryDto: CreateDiaryDto,
   ): Promise<CreateDiaryResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     const diary = await this.meService.createDiary(requestUser, createDiaryDto);
 
     return {
@@ -108,14 +106,13 @@ export class MeController {
 
   @Patch(routes.me.diary.detail)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AccessJwtGuard)
   @ApiUpdateDiaryResponses()
   async updateDiary(
     @ReqUser() requestUser: RequestUser,
     @Param() updateDiaryParam: UpdateDiaryParam,
     @Body() updateDiaryBody: UpdateDiaryBody,
   ): Promise<void> {
-    requestUser = MOCK_REQUEST_USER;
-
     const updateDiaryDto = UpdateDiaryDto.of(updateDiaryParam, updateDiaryBody);
 
     await this.meService.updateDiary(requestUser, updateDiaryDto);
@@ -123,24 +120,22 @@ export class MeController {
 
   @Delete(routes.me.diary.detail)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AccessJwtGuard)
   @ApiDeleteDiaryResponses()
   async deleteDiary(
     @ReqUser() requestUser: RequestUser,
     @Param() deleteDiaryParamDto: DeleteDiaryParamDto,
   ) {
-    requestUser = MOCK_REQUEST_USER;
-
     await this.meService.deleteDiary(requestUser, deleteDiaryParamDto);
   }
 
   @Get(routes.me.setting.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiGetUserSettingResponses()
   async getSetting(
     @ReqUser() requestUser: RequestUser,
   ): Promise<GetUserSettingResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     const settings = await this.meService.findUserSetting(requestUser);
 
     return {
@@ -150,13 +145,12 @@ export class MeController {
 
   @Patch(routes.me.setting.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiPatchUserSettingResponses()
   async updateSetting(
     @ReqUser() requestUser: RequestUser,
     @Body() updateUserSettingBody: UpdateUserSettingBody,
   ): Promise<void> {
-    requestUser = MOCK_REQUEST_USER;
-
     const dto = new UpdateUserSettingDto(
       requestUser,
       updateUserSettingBody,
@@ -167,12 +161,11 @@ export class MeController {
 
   @Get(routes.me.info.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiGetUserInfoResponse()
   async findUserInfo(
     @ReqUser() requestUser: RequestUser,
   ): Promise<GetUserInfoResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     const userInfo = await this.meService.findUserInfo(requestUser);
 
     return {
@@ -182,12 +175,11 @@ export class MeController {
 
   @Patch(routes.me.password.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   async changePassword(
     @ReqUser() requestUser: RequestUser,
     @Body() updatePasswordDto: UpdatePasswordBody,
   ): Promise<void> {
-    requestUser = MOCK_REQUEST_USER;
-
     const dto = new UpdatePasswordDto(
       requestUser,
       updatePasswordDto
@@ -198,13 +190,12 @@ export class MeController {
 
   @Get(routes.me.diary.calendar.root)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessJwtGuard)
   @ApiGetCalendarResponse()
   async getCalendar(
     @ReqUser() requestUser: RequestUser,
     @Query() query: GetCalendarQuery,
   ): Promise<GetCalendarResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     const year = query.year;
     const month = query.month;
 
@@ -221,7 +212,7 @@ export class MeController {
   }
 
   @Patch(routes.me.profile.root)
-  @UseGuards(FormDataOnlyGuard)
+  @UseGuards(FormDataOnlyGuard, AccessJwtGuard)
   @UseInterceptors(FileInterceptor('avatar', {
     dest: FILE_UPLOAD_PATH,
   }))
