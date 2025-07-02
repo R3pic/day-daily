@@ -212,7 +212,7 @@ export class MeController {
   }
 
   @Patch(routes.me.profile.root)
-  @UseGuards(FormDataOnlyGuard, AccessJwtGuard)
+  @UseGuards(AccessJwtGuard, FormDataOnlyGuard)
   @UseInterceptors(FileInterceptor('avatar', {
     dest: FILE_UPLOAD_PATH,
   }))
