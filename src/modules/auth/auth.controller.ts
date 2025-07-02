@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { LocalGuard, RefreshJwtGuard } from '@auth/guards';
 import { RegisterDto } from '@auth/dto';
 import { cookieOptions } from '@auth/constants';
+import { ApiLoginResponses } from '@auth/decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +25,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalGuard)
+  @ApiLoginResponses()
   async localLogin(
     @ReqUser() reqUser: RequestUser,
     @Res({ passthrough: true }) res: Response,

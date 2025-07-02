@@ -11,7 +11,7 @@ import {
   Query, UploadedFile, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { routes } from '@common/constants/api-routes';
 import { PaginationQuery, RequestUser } from '@common/dto';
@@ -44,6 +44,7 @@ const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
 
 @ApiTags('Me')
 @ApiExtraModels(GetMeResponse, CreateDiaryResponse, GetUserSettingResponse, GetUserInfoResponse, GetCalendarResponse)
+@ApiCookieAuth('access_token')
 @Controller(routes.me.root)
 export class MeController {
   constructor(
