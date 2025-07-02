@@ -20,7 +20,7 @@ export class TokenService {
   }
 
   async generateRefreshToken(id: string): Promise<string> {
-    this.logger.debug('generateAccessToken');
+    this.logger.debug('generateRefreshToken');
     const refreshToken = await this.jwtService.signAsync({ id }, {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
     });

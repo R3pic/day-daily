@@ -68,7 +68,7 @@ export class DiaryService {
     const user = await this.userService.findById(dto.targetUserId);
 
     if (user.userSetting.hideDiaries &&
-        dto.targetUserId !== dto.requestUser.id
+       (dto.requestUser && dto.targetUserId !== dto.requestUser.id)
     ) throw new DiaryForbiddenException();
 
     const diaries = await this.diaryRepository.findByUserId(user.id, {

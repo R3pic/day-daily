@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { DiaryService } from '@diary/diary.service';
@@ -9,8 +9,7 @@ import { routes } from '@common/constants/api-routes';
 import { PaginationQuery, RequestUser } from '@common/dto';
 import { ReadDiaryDto } from '@diary/dto';
 import { ReqUser } from '@common/decorator';
-
-const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
+import { GuestJwtGuard } from '@auth/guards/guest-jwt.guard';
 
 @ApiTags('User')
 @ApiExtraModels(GetDiaryByUserResponse)
@@ -22,14 +21,13 @@ export class UserController {
 
   @Get(routes.user.detail.diaries)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(GuestJwtGuard)
   @ApiGetByUserResponses()
   async getUserDiaries(
-    @ReqUser() requestUser: RequestUser,
+    @ReqUser() requestUser: RequestUser | null,
     @Param() getUserDiariesParam: GetUserDiariesParam,
     @Query() query: PaginationQuery,
   ): Promise<GetDiaryByUserResponse> {
-    requestUser = MOCK_REQUEST_USER;
-
     query.offset =  query.offset ? query.offset : 0;
     query.limit = query.limit ? query.limit : 15;
 

@@ -28,7 +28,7 @@ export class AuthController {
     @ReqUser() reqUser: RequestUser,
     @Res({ passthrough: true }) res: Response,
   ) {
-    this.logger.debug('login');
+    this.logger.debug(`login ${reqUser.id}`);
     const accessToken = await this.authService.generateAccessToken(reqUser);
     const refreshToken = await this.authService.generateRefreshToken(reqUser);
 

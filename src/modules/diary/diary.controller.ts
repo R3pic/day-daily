@@ -1,6 +1,6 @@
 import {
   Controller, Get,
-  HttpCode, HttpStatus, Query,
+  HttpCode, HttpStatus, Logger, Query, UseGuards,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
@@ -10,22 +10,28 @@ import { DiaryService } from '@diary/diary.service';
 import { GetRecentDiaryResponse } from '@diary/responses';
 import { ApiGetRecentDiaryResponses } from '@diary/decorator';
 import { ReqUser } from '@common/decorator';
+import { GuestJwtGuard } from '@auth/guards/guest-jwt.guard';
 
 @ApiTags('Diary')
 @ApiExtraModels(GetRecentDiaryResponse)
 @Controller(routes.diary.root)
 export class DiaryController {
+  private readonly logger = new Logger(DiaryController.name);
+
   constructor(
     private readonly diaryService: DiaryService,
   ) {}
 
   @Get(routes.diary.recent)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(GuestJwtGuard)
   @ApiGetRecentDiaryResponses()
   async recent(
     @ReqUser() requestUser: RequestUser | null,
     @Query() query: PaginationQuery,
   ): Promise<GetRecentDiaryResponse> {
+    this.logger.debug(`requestUser: ${requestUser?.id}`);
+
     query.offset = query.offset ? query.offset : 0;
     query.limit = query.limit ? query.limit : 4;
 
