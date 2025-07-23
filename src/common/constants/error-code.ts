@@ -1,0 +1,20 @@
+export const ErrorCode = {
+  // Auth
+  INVALID_CREDENTIAL: 'INVALID_CREDENTIAL',
+  DUPLICATED_EMAIL: 'DUPLICATED_EMAIL',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+  TOKEN_INVALID: 'TOKEN_INVALID',
+
+  // Diary
+  DIARY_EDIT_EXPIRED: 'DIARY_EDIT_EXPIRED',
+  DIARY_FORBIDDEN: 'DIARY_FORBIDDEN',
+  DIARY_NOT_FOUND: 'DIARY_NOT_FOUND',
+
+  // File
+  AVATAR_NOT_FOUND: 'AVATAR_NOT_FOUND',
+
+  // User
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+} as const;
+
+export type ErrorCode = typeof ErrorCode[keyof typeof ErrorCode];

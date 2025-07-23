@@ -18,9 +18,11 @@ export class ServiceExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     const statusCode = exception.statusCode;
+    const errorCode = exception.errorCode;
 
     const body: ServiceExceptionResponse = {
       statusCode,
+      errorCode,
       message: exception.message,
       path: request.url,
     };
