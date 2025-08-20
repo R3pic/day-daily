@@ -40,8 +40,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FILE_UPLOAD_PATH } from '@multer/constants';
 import { AccessJwtGuard } from '@auth/guards/access-jwt.guard';
 
-const MOCK_REQUEST_USER = { id: '3997d213-112a-11f0-b5c6-0242ac120002' };
-
 @ApiTags('Me')
 @ApiExtraModels(GetMeResponse, CreateDiaryResponse, GetUserSettingResponse, GetUserInfoResponse, GetCalendarResponse)
 @ApiCookieAuth('access_token')
@@ -223,8 +221,6 @@ export class MeController {
     @ReqUser() requestUser: RequestUser,
     @UploadedFile(new AvatarValidationPipe()) avatar: Express.Multer.File,
   ) {
-    requestUser = MOCK_REQUEST_USER;
-
     await this.meService.updateProfileAvatar({
       requestUser,
       avatar,
