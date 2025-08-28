@@ -1,6 +1,7 @@
 export { UserDto } from './user.dto';
 export { CreateUserDto } from './create-user.dto';
 export { GetUserDiariesParam } from './get-user-diaries-param.dto';
+export { GetUserParam } from './get-user-param.dto';
 
 export { UserSettingDto } from './user-setting.dto';
 export { CreateUserSettingDto } from './create-user-setting.dto';

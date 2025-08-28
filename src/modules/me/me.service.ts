@@ -11,6 +11,7 @@ import { UserService } from '@user/user.service';
 import { DiaryCalendarService } from '@diary/diary-calendar.service';
 import { UserMapper } from '@user/user.mapper';
 import { UpdateProfileAvatarDto } from '@me/dto';
+import { UserNotFoundException } from '@user/exceptions';
 
 @Injectable()
 export class MeService {
@@ -65,7 +66,9 @@ export class MeService {
   }
 
   async findUserInfo(requestUser: RequestUser): Promise<UserInfoDto> {
-    const userInfo = this.userInfoService.findByUserId(requestUser.id);
+    const userInfo = await this.userInfoService.findByUserId(requestUser.id, requestUser);
+
+    if (userInfo === null) throw new UserNotFoundException();
 
     return userInfo;
   }

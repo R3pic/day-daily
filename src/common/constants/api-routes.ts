@@ -14,6 +14,7 @@ export const routes = {
   user: {
     root: 'users',
     detail: {
+      root: ':id',
       diaries: ':id/diaries',
     },
   },

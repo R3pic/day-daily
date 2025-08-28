@@ -18,6 +18,12 @@ export class UserSettingService {
     return UserSettingMapper.toDto(entity);
   }
 
+  async findByUserId(userId: string) {
+    const entity = await this.userSettingRepository.findByUserId(userId);
+
+    return UserSettingMapper.toDto(entity);
+  }
+
   async save(dto: CreateUserSettingDto) {
     this.logger.debug('save');
     await this.userSettingRepository.save(dto.userId);
