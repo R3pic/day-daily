@@ -7,24 +7,38 @@ import { UserController } from './user.controller';
 import { GetUserDiariesParam } from '@user/dto';
 import { GetDiaryByUserResponse } from '@diary/responses';
 import { RequestUser } from '@common/dto';
+import { UserService } from '@user/user.service';
+import { UserInfoService } from '@user/user-info.service';
 
 describe('UserController', () => {
   let controller: UserController;
   let mockDiaryService: MockProxy<DiaryService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUserService: MockProxy<UserService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUserInfoService: MockProxy<UserInfoService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
         DiaryService,
+        UserService,
+        UserInfoService,
       ],
     })
       .overrideProvider(DiaryService)
       .useValue(mock<DiaryService>())
+      .overrideProvider(UserService)
+      .useValue(mock<UserService>())
+      .overrideProvider(UserInfoService)
+      .useValue(mock<UserInfoService>())
       .compile();
 
     controller = module.get<UserController>(UserController);
     mockDiaryService = module.get(DiaryService);
+    mockUserService = module.get(UserService);
+    mockUserInfoService = module.get(UserInfoService);
   });
 
   afterEach(() => {
