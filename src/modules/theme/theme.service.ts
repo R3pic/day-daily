@@ -20,8 +20,12 @@ export class ThemeService implements OnModuleInit {
     await this.triggerUpdateTodayTheme();
   }
 
-  getTodayTheme(): ThemeEntity {
+  getTodayTheme() {
     return this.todayTheme;
+  }
+
+  async getTodayThemeCount() {
+    return await this.themeRepository.getUsedThemeCount(this.todayTheme);
   }
 
   @Transactional()

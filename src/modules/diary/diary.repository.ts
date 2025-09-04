@@ -118,4 +118,13 @@ export class DiaryRepository implements DiaryRepositoryBase {
       id: diaryEntity.id,
     });
   }
+
+  async getThemeUsedCount(themeId: number): Promise<number> {
+    this.logger.debug('getThemeUsedCount');
+    return await this.repository.countBy({
+      theme: {
+        id: themeId,
+      },
+    });
+  }
 }

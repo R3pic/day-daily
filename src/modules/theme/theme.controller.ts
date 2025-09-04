@@ -21,11 +21,13 @@ export class ThemeController {
   @Get(routes.theme.today)
   @HttpCode(HttpStatus.OK)
   @ApiGetTodayThemeResponses()
-  today(): TodayThemeResponse {
+  async today(): Promise<TodayThemeResponse> {
     const { text } = this.themeService.getTodayTheme();
+    const count = await this.themeService.getTodayThemeCount();
 
     return {
       theme: text,
+      count,
     };
   }
 }

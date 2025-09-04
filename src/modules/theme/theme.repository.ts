@@ -4,6 +4,7 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 
 import { ThemeRepositoryBase } from '@theme/interface';
 import { ThemeEntity } from '@theme/entities';
+import { DiaryEntity } from '@diary/entities';
 
 @Injectable()
 export class ThemeRepository implements ThemeRepositoryBase {
@@ -16,14 +17,14 @@ export class ThemeRepository implements ThemeRepositoryBase {
     return this.txHost.tx.getRepository(ThemeEntity);
   }
 
-  findById(id: number): Promise<ThemeEntity | null> {
+  async findById(id: number): Promise<ThemeEntity | null> {
     this.logger.debug(`findById: ${id}`);
     return this.repository.findOneBy({
       id,
     });
   }
 
-  getRandomTheme(): Promise<ThemeEntity> {
+  async getRandomTheme(): Promise<ThemeEntity> {
     this.logger.debug('getRandomTheme');
     const queryBuilder = this.repository.createQueryBuilder()
       .select()
@@ -31,5 +32,14 @@ export class ThemeRepository implements ThemeRepositoryBase {
       .limit(1);
 
     return queryBuilder.getOneOrFail();
+  }
+
+  async getUsedThemeCount(theme: ThemeEntity): Promise<number> {
+    return this.txHost.tx.getRepository(DiaryEntity)
+      .count({
+        where: {
+          theme,
+        },
+      });
   }
 }
