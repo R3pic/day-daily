@@ -100,17 +100,20 @@ describe('MeController', () => {
           },
           created_at: new Date(),
         },
+        previous_diaries: [],
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const diaryCreateMock = service.createDiary.mockResolvedValue({
-        id: '1',
-        title: dto.title,
-        content: dto.content,
-        author: {
-          id: 'user-id',
-          full_name: '홍길동',
+      service.createDiary.mockResolvedValue({
+        diary: {
+          id: '1',
+          title: dto.title,
+          content: dto.content,
+          author: {
+            id: 'user-id',
+            full_name: '홍길동',
+          },
+          created_at: new Date(),
         },
-        created_at: new Date(),
+        previousDiaries: [],
       });
 
       const actual = await controller.createDiary(requestUser, dto);
