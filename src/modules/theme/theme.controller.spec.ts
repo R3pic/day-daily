@@ -32,13 +32,15 @@ describe('ThemeController', () => {
       text: '오늘의 주제',
     };
 
-    it('서비스에서 받은 오늘의 주제를 응답의 형식에 맞게 반환한다.', () => {
+    it('서비스에서 받은 오늘의 주제를 응답의 형식에 맞게 반환한다.', async () => {
       const expected: TodayThemeResponse = {
         theme: theme.text,
+        count: 0,
       };
       const getTodayThemeMock = service.getTodayTheme.mockReturnValue(theme);
+      service.getTodayThemeCount.mockResolvedValue(0);
 
-      const actual = controller.today();
+      const actual = await controller.today();
 
       expect(getTodayThemeMock).toHaveBeenCalled();
       expect(actual).toEqual(expected);
