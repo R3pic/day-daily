@@ -5,7 +5,7 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 
 import { DiaryRepositoryBase } from '@diary/interfaces';
 import { DiaryEntity } from '@diary/entities';
-import { FindManyOptions } from 'typeorm';
+import { FindManyOptions, Not } from 'typeorm';
 import { RequestUser } from '@common/dto';
 
 @Injectable()
@@ -59,6 +59,22 @@ export class DiaryRepository implements DiaryRepositoryBase {
         author: {
           id,
         },
+      },
+      relations: ['author'],
+    });
+  }
+
+  async findPreviousDiariesWithoutTodayDiary(id: string, themeId: number, diaryId: string) {
+    return this.repository.find({
+      order: { createdAt: 'DESC' },
+      where: {
+        author: {
+          id,
+        },
+        theme: {
+          id: themeId,
+        },
+        id: Not(diaryId),
       },
       relations: ['author'],
     });

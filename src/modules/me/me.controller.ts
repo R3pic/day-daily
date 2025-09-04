@@ -96,10 +96,14 @@ export class MeController {
     @ReqUser() requestUser: RequestUser,
     @Body() createDiaryDto: CreateDiaryDto,
   ): Promise<CreateDiaryResponse> {
-    const diary = await this.meService.createDiary(requestUser, createDiaryDto);
+    const {
+      diary,
+      previousDiaries,
+    } = await this.meService.createDiary(requestUser, createDiaryDto);
 
     return {
       diary,
+      previous_diaries: previousDiaries,
     };
   }
 

@@ -79,6 +79,16 @@ export class DiaryService {
     return diaries.map((diary) => DiaryMapper.toDto(diary));
   }
 
+  async findTodayThemeDiariesByUser(requestUser: RequestUser, diaryDto: DiaryDto): Promise<DiaryDto[]> {
+    this.logger.debug('findTodayThemeDiariesByUser');
+
+    const todayTheme = this.themeService.getTodayTheme();
+
+    const diaries = await this.diaryRepository.findPreviousDiariesWithoutTodayDiary(requestUser.id, todayTheme.id, diaryDto.id);
+
+    return diaries.map((diary) => DiaryMapper.toDto(diary));
+  }
+
   async findByRecent(requestUser: RequestUser | null, query?: PaginationQuery): Promise<DiaryDto[]> {
     this.logger.debug('findByRecent');
 

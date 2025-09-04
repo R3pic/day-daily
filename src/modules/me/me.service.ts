@@ -41,9 +41,13 @@ export class MeService {
   }
 
   async createDiary(requestUser: RequestUser, createDiaryDto: CreateDiaryDto) {
-    const diary = this.diaryService.create(requestUser, createDiaryDto);
+    const diary = await this.diaryService.create(requestUser, createDiaryDto);
+    const previousDiaries = await this.diaryService.findTodayThemeDiariesByUser(requestUser, diary);
 
-    return diary;
+    return {
+      diary,
+      previousDiaries,
+    };
   }
 
   async updateDiary(requestUser: RequestUser, updateDiaryDto: UpdateDiaryDto) {
