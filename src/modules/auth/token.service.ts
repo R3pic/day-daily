@@ -23,6 +23,7 @@ export class TokenService {
     this.logger.debug('generateRefreshToken');
     const refreshToken = await this.jwtService.signAsync({ id }, {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: '7d',
     });
     return refreshToken;
   }
