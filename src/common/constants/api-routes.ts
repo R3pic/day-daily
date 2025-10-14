@@ -17,6 +17,7 @@ export const routes = {
       root: ':id',
       diaries: ':id/diaries',
     },
+    checkEmail: 'check-email',
   },
 
   me: {

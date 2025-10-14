@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
 import { DiaryService } from '@diary/diary.service';
@@ -14,6 +14,9 @@ import { UserInfoService } from '@user/user-info.service';
 import { GetUserResponse } from '@user/responses/get-user.response';
 import { ApiGetUserResponses } from '@user/decorator';
 import { UserService } from '@user/user.service';
+import { Response } from 'express';
+import { ApiCheckEmailResponses } from '@user/decorator/api-check-email.decorator';
+import { DuplicatedEmailException } from '@auth/exceptions';
 
 @ApiTags('User')
 @ApiExtraModels(GetDiaryByUserResponse, GetUserResponse)
@@ -24,6 +27,19 @@ export class UserController {
     private readonly userService: UserService,
     private readonly userInfoService: UserInfoService,
   ) {}
+
+  @Get(routes.user.checkEmail)
+  @ApiCheckEmailResponses()
+  async checkEmail(
+    @Query('email') email: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const isExists = await this.userService.existsByEmail(email);
+
+    if (isExists) throw new DuplicatedEmailException();
+
+    res.status(200).json();
+  }
 
   @Get(routes.user.detail.root)
   @HttpCode(HttpStatus.OK)
