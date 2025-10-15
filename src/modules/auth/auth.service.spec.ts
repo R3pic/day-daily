@@ -11,6 +11,7 @@ import { UserNotFoundException } from '@user/exceptions';
 import { RequestUser } from '@common/dto';
 import { TokenService } from '@auth/token.service';
 import { UserSettingService } from '@user/user-setting.service';
+import { AuthRepository } from '@auth/auth.repository';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -23,6 +24,7 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        AuthRepository,
         AuthService,
         UserService,
         UserSettingService,
