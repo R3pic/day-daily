@@ -10,11 +10,13 @@ import { RequestUser } from '@common/dto';
 import { UserNotFoundException } from '@user/exceptions';
 import { CredentialException } from '@auth/exceptions/credential.exception';
 import { TokenService } from '@auth/token.service';
+import { AuthRepository } from '@auth/auth.repository';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
+    private readonly authRepository: AuthRepository,
     private readonly userService: UserService,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
@@ -47,8 +49,24 @@ export class AuthService {
     } catch (e) {
       this.logger.error(e);
       if (e instanceof UserNotFoundException) throw new CredentialException();
+
       throw new InternalServerErrorException();
     }
+  }
+
+  @Transactional()
+  async localLogin(requestUser: RequestUser) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.tokenService.generateAccessToken(requestUser.id),
+      this.tokenService.generateRefreshToken(requestUser.id),
+    ]);
+
+    await this.authRepository.saveRefreshToken(requestUser.id, refreshToken);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async generateAccessToken(requestUser: RequestUser): Promise<string> {
@@ -57,5 +75,10 @@ export class AuthService {
 
   async generateRefreshToken(requestUser: RequestUser): Promise<string> {
     return this.tokenService.generateRefreshToken(requestUser.id);
+  }
+
+  async logout(reqUser?: RequestUser) {
+    if (reqUser)
+      await this.authRepository.clearRefreshToken(reqUser.id);
   }
 }

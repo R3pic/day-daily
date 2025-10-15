@@ -10,9 +10,13 @@ import { JwtOptionFactory } from '@auth/factory';
 import { RefreshJwtStrategy } from '@auth/strategies/refresh-jwt.strategy';
 import { TokenService } from '@auth/token.service';
 import { AccessJwtStrategy } from '@auth/strategies/access-jwt.strategy';
+import { AuthRepository } from '@auth/auth.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthEntity } from '@auth/entities/auth.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([AuthEntity]),
     PassportModule,
     JwtModule.registerAsync({
       useClass: JwtOptionFactory,
@@ -22,6 +26,7 @@ import { AccessJwtStrategy } from '@auth/strategies/access-jwt.strategy';
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthRepository,
     HashService,
     TokenService,
     LocalStrategy,

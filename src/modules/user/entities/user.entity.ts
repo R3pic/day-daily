@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { UserSettingEntity } from '@user/entities/user-setting.entity';
+import { AuthEntity } from '@auth/entities/auth.entity';
+
 @Entity({ name: 'users' })
 export class UserEntity {
   @Expose()
@@ -32,6 +34,9 @@ export class UserEntity {
 
   @OneToOne(() => UserSettingEntity, (setting) => setting.user, { cascade: true })
   userSetting: UserSettingEntity;
+
+  @OneToOne(() => AuthEntity, (auth) => auth.user, { cascade: true })
+  auth: AuthEntity;
 
   static of(user: Partial<UserEntity>): UserEntity {
     return Object.assign(new UserEntity(), user);
