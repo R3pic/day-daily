@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { RegisterDto } from '@auth/dto';
 import { RequestUser } from '@common/dto';
-import { Response } from 'express';
 
 describe('AuthController', () => {
   let controller: AuthController;
