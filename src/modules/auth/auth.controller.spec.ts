@@ -43,19 +43,19 @@ describe('AuthController', () => {
   });
 
   describe('localLogin', () => {
-    it('로그인에 성공하는 경우 액세스 토큰을 쿠키에 담아 반환한다.', async () => {
+    it('로그인에 성공하는 경우 액세스 토큰과 리프레시 토큰을 반환한다.', async () => {
       const requestUser = new RequestUser('test');
-      const res = mock<Response>();
-      const mockCookie = res.cookie.mockReturnThis();
 
-      const accessToken = 'jwt-token';
+      const accessToken = 'access-token';
+      const refreshToken = 'refresh-token';
 
-      const mockGenerateAccessToken = mockAuthService.generateAccessToken.mockResolvedValue(accessToken);
+      mockAuthService.generateAccessToken.mockResolvedValue(accessToken);
+      mockAuthService.generateRefreshToken.mockResolvedValue(refreshToken);
 
-      await controller.localLogin(requestUser, res);
+      const token = await controller.localLogin(requestUser);
 
-      expect(mockGenerateAccessToken).toHaveBeenCalledTimes(1);
-      expect(mockCookie).toHaveBeenCalledWith('access_token', accessToken, expect.anything());
+      expect(token.access_token).toEqual(accessToken);
+      expect(token.refresh_token).toEqual(refreshToken);
     });
   });
 });

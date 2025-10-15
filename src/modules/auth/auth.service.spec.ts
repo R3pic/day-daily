@@ -15,6 +15,8 @@ import { AuthRepository } from '@auth/auth.repository';
 
 describe('AuthService', () => {
   let service: AuthService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let repository: AuthRepository;
   let userService: MockProxy<UserService>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let userSettingService: MockProxy<UserSettingService>;
@@ -32,6 +34,8 @@ describe('AuthService', () => {
         TokenService,
       ],
     })
+      .overrideProvider(AuthRepository)
+      .useValue(mock<AuthRepository>())
       .overrideProvider(UserService)
       .useValue(mock<UserService>())
       .overrideProvider(UserSettingService)
