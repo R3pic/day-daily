@@ -10,10 +10,7 @@ export function createSwaggerConfig(NODE_ENV: Environment, HOST: string) {
     .addTag('Diary')
     .addTag('Theme')
     .addTag('Me')
-    .addCookieAuth('access_token', {
-      type: 'apiKey',
-      in: 'cookie',
-    });
+    .addBearerAuth();
 
   if (NODE_ENV === Environment.Production)
     documentBuilder.addServer(HOST);
